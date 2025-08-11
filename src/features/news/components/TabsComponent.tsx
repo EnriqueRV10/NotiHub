@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Form, Input, DatePicker, Button, Divider, Popover, message } from "antd";
+import {
+  Tabs,
+  Form,
+  Input,
+  DatePicker,
+  Button,
+  Divider,
+  Popover,
+  message,
+} from "antd";
 import type { FormInstance, TabsProps } from "antd";
 import { AssignmentsComponent } from "./AssignmentsComponent";
 import { useTestAssignment } from "@/hooks/useTestAssignment";
-import { convertComponentToApiFormat } from "@/utils/FormtoAPI";
+import { convertComponentToApiFormat } from "@/features/news/utils/FormtoAPI";
 
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
@@ -33,7 +42,7 @@ export const TabsComponent = ({ form }: TabsComponentProps) => {
     if (error) {
       setPopoverOpen(false);
       messageApi.error({
-        content: 'Error al probar la asignación',
+        content: "Error al probar la asignación",
         duration: 5,
       });
     }
@@ -41,10 +50,14 @@ export const TabsComponent = ({ form }: TabsComponentProps) => {
 
   const popoverContent = (
     <div>
-      <p>Aplica para <strong>{data?.count}</strong> elementos</p>
+      <p>
+        Aplica para <strong>{data?.count}</strong> elementos
+      </p>
       <Divider plain>Ejemplos</Divider>
       <ul className="list-disc px-4">
-        {data?.examples && Array.isArray(data.examples) && data.examples.length > 0 ? (
+        {data?.examples &&
+        Array.isArray(data.examples) &&
+        data.examples.length > 0 ? (
           data.examples.map((item: string, index: number) => (
             <li key={index}>{item}</li>
           ))
@@ -61,7 +74,12 @@ export const TabsComponent = ({ form }: TabsComponentProps) => {
       label: "Info",
       children: (
         <div className="mx-3">
-          <Form.Item name="title" label="Titulo" rules={[{ required: true, message: "Campo Título requerido" }]} required={false}>
+          <Form.Item
+            name="title"
+            label="Titulo"
+            rules={[{ required: true, message: "Campo Título requerido" }]}
+            required={false}
+          >
             <Input maxLength={128} showCount />
           </Form.Item>
           <Divider />
@@ -74,7 +92,14 @@ export const TabsComponent = ({ form }: TabsComponentProps) => {
             />
           </Form.Item>
           <Divider />
-          <Form.Item name="dateRange" label="Vigencia" rules={[{ required: true, message: "Seleccione un rango de fechas" }]} required={false}>
+          <Form.Item
+            name="dateRange"
+            label="Vigencia"
+            rules={[
+              { required: true, message: "Seleccione un rango de fechas" },
+            ]}
+            required={false}
+          >
             <RangePicker />
           </Form.Item>
         </div>
@@ -95,12 +120,12 @@ export const TabsComponent = ({ form }: TabsComponentProps) => {
               setPopoverOpen(open);
             }}
           >
-            <Button 
-              shape="round" 
+            <Button
+              shape="round"
               onClick={() => {
                 setPopoverOpen(false);
                 handleTest();
-              }} 
+              }}
               loading={isPending}
             >
               Probar Asignación

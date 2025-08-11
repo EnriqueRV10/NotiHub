@@ -8,13 +8,13 @@ import {
   SaveOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useSingleNewsEditor } from "@/hooks/useSingleNewsEditor";
+import { useSingleNewsEditor } from "@/features/news/hooks/useSingleNewsEditor";
 import dayjs from "dayjs";
-import { TabsComponent } from "@/components/TabsComponent";
-import { convertApiToComponentFormat } from "@/utils/APItoForm";
-import { convertComponentToApiFormat } from "@/utils/FormtoAPI";
-import QuillEditor from "@/components/QuillEditor";
-import { useUpdateNews } from "@/hooks/useUpdateNews";
+import { TabsComponent } from "@/features/news/components/TabsComponent";
+import { convertApiToComponentFormat } from "@/features/news/utils/APItoForm";
+import { convertComponentToApiFormat } from "@/features/news/utils/FormtoAPI";
+import QuillEditor from "@/features/news/components/QuillEditor";
+import { useUpdateNews } from "@/features/news/hooks/useUpdateNews";
 
 const { Header, Sider, Content } = Layout;
 
@@ -169,8 +169,12 @@ export default function EditNews({ params }: { params: { id: string } }) {
     );
 
     if (hasFilterRules || hasExcludeRules) {
-      employee_assignment_policy.filter = convertComponentToApiFormat(values.filter);
-      employee_assignment_policy.exclude = convertComponentToApiFormat(values.exclude);
+      employee_assignment_policy.filter = convertComponentToApiFormat(
+        values.filter
+      );
+      employee_assignment_policy.exclude = convertComponentToApiFormat(
+        values.exclude
+      );
     }
 
     return {

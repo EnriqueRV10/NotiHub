@@ -4,8 +4,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 import React from "react";
-import esEs from 'antd/locale/es_ES';
-import { TenantInitializer } from "@/components/TenantInitializer";
+import esEs from "antd/locale/es_ES";
 
 const queryClient = new QueryClient();
 
@@ -16,19 +15,16 @@ export default function ClientWrapper({
 }) {
   return (
     <ConfigProvider
-    theme={{
-      token:{
-        colorPrimary: '#fa541c',
-        colorLink: '#fa541c',
-      }
-    }}
-    locale={esEs}
+      theme={{
+        token: {
+          colorPrimary: "#fa541c",
+          colorLink: "#fa541c",
+        },
+      }}
+      locale={esEs}
     >
       <QueryClientProvider client={queryClient}>
-        <AntdRegistry>
-          <TenantInitializer />
-          {children}
-        </AntdRegistry>
+        <AntdRegistry>{children}</AntdRegistry>
       </QueryClientProvider>
     </ConfigProvider>
   );

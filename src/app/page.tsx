@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Button,
@@ -17,14 +17,14 @@ import {
   Popconfirm,
 } from "antd";
 import { PlusOutlined, FilterFilled, DeleteOutlined } from "@ant-design/icons";
-import type { GetProps } from 'antd';
-import { useNewsQuery } from "@/hooks/useNewsQuery";
-import { useNewsCounters } from "@/hooks/useNewsCounters";
-import { TablePaginationConfig } from 'antd';
-import { StatisticsCard } from "@/components/StatisticsCard";
-import NewsCreationDrawer from "@/components/NewsCreationDrawer";
-import { DetailsDrawer } from "@/components/DetailsDrawer";
-import { useDeleteNews } from '@/hooks/useDeleteNews';
+import type { GetProps } from "antd";
+import { useNewsQuery } from "@/features/news/hooks/useNewsQuery";
+import { useNewsCounters } from "@/features/news/hooks/useNewsCounters";
+import { TablePaginationConfig } from "antd";
+import { StatisticsCard } from "@/features/news/components/StatisticsCard";
+import NewsCreationDrawer from "@/features/news/components/NewsCreationDrawer";
+import { DetailsDrawer } from "@/features/news/components/DetailsDrawer";
+import { useDeleteNews } from "@/features/news/hooks/useDeleteNews";
 
 interface DataType {
   key: string;
@@ -56,7 +56,9 @@ export default function Home() {
       title: "Título",
       dataIndex: "title",
       key: "title",
-      render: (text, record) => <a onClick={() => router.push(`/${record.key}`)}>{text}</a>,
+      render: (text, record) => (
+        <a onClick={() => router.push(`/${record.key}`)}>{text}</a>
+      ),
     },
     {
       title: "Creado por",
@@ -67,12 +69,13 @@ export default function Home() {
       title: "Inicio",
       dataIndex: "start",
       key: "start",
-      sorter: (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+      sorter: (a, b) =>
+        new Date(a.start).getTime() - new Date(b.start).getTime(),
       render: (start: string) => {
-        const formattedDate = new Date(start).toLocaleDateString('es-ES', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
+        const formattedDate = new Date(start).toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
         });
         return <span>{formattedDate}</span>;
       },
@@ -83,10 +86,10 @@ export default function Home() {
       dataIndex: "end",
       key: "end",
       render: (end: string) => {
-        const formattedDate = new Date(end).toLocaleDateString('es-ES', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
+        const formattedDate = new Date(end).toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
         });
         return <span>{formattedDate}</span>;
       },
@@ -96,7 +99,10 @@ export default function Home() {
       dataIndex: "status",
       key: "status",
       render: (status: number) => {
-        const { text, color } = statusMap[status] || { text: 'Desconocido', color: 'gray' };
+        const { text, color } = statusMap[status] || {
+          text: "Desconocido",
+          color: "gray",
+        };
         return <Badge color={color} text={text} />;
       },
     },
@@ -104,12 +110,13 @@ export default function Home() {
       title: "Estadísticas",
       dataIndex: "stats",
       key: "stats",
-      render: (text, record) => <a onClick={() => showReadDrawer(record.key)}>{text}</a>,
-      align: 'center',
+      render: (text, record) => (
+        <a onClick={() => showReadDrawer(record.key)}>{text}</a>
+      ),
+      align: "center",
       width: 200,
     },
     {
-      
       key: "action",
       align: "center",
       render: (_, record) => (
@@ -129,17 +136,18 @@ export default function Home() {
     },
   ];
 
-  
-  const [open, setOpen] = useState(false); // Estado para controlar si el Drawer 
+  const [open, setOpen] = useState(false); // Estado para controlar si el Drawer
   const [openDetails, setOpenDetails] = useState(false); // Estado para controlar Drawer de detalles sobre lecturas
-  const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);  // Estado para almacenar el ID de la noticia seleccionada
+  const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null); // Estado para almacenar el ID de la noticia seleccionada
   const [selectedFilter, setSelectedFilter] = useState<number>(-1); // Estado para almacenar el filtro seleccionado
-  const [buttonText, setButtonText] = useState<string>(statusMap[-1]?.text || "Todas"); // Estado para almacenar el texto del botón
-  const [searchText, setSearchText] = useState<string>('');
+  const [buttonText, setButtonText] = useState<string>(
+    statusMap[-1]?.text || "Todas"
+  ); // Estado para almacenar el texto del botón
+  const [searchText, setSearchText] = useState<string>("");
   const [pagination, setPagination] = useState({
-    current: 1,     
-    pageSize: 10,   
-    total: 0,       
+    current: 1,
+    pageSize: 10,
+    total: 0,
   });
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -147,7 +155,12 @@ export default function Home() {
   const deleteNewsMutation = useDeleteNews();
 
   // Hook para obtener las noticias con paginación
-  const { data: newsData, error: errorNews, isLoading: isNewsLoading, refetch: newsQueryRefetch } = useNewsQuery({ 
+  const {
+    data: newsData,
+    error: errorNews,
+    isLoading: isNewsLoading,
+    refetch: newsQueryRefetch,
+  } = useNewsQuery({
     publish_status: selectedFilter !== -1 ? selectedFilter : undefined,
     page: pagination.current,
     pageSize: pagination.pageSize,
@@ -155,17 +168,21 @@ export default function Home() {
   });
 
   // Hook para obtener los contadores de noticias
-  const { data: countersData, error: errorCounters, isLoading: isCountersLoading, refetch: countersRefetch} = useNewsCounters({});
-
+  const {
+    data: countersData,
+    error: errorCounters,
+    isLoading: isCountersLoading,
+    refetch: countersRefetch,
+  } = useNewsCounters({});
 
   // Actualiza el estado de paginación cuando se cargan los datos
   useEffect(() => {
     if (newsData) {
       setPagination((prev) => ({
         ...prev,
-        total: newsData.total,             
-        current: newsData.currentPage,     
-        pageSize: newsData.pageSize,       
+        total: newsData.total,
+        current: newsData.currentPage,
+        pageSize: newsData.pageSize,
       }));
     }
   }, [newsData]);
@@ -173,7 +190,8 @@ export default function Home() {
   useEffect(() => {
     if (errorNews) {
       messageApi.error({
-        content: 'Error al cargar las noticias. Por favor, intente de nuevo más tarde.',
+        content:
+          "Error al cargar las noticias. Por favor, intente de nuevo más tarde.",
         duration: 5,
       });
     }
@@ -193,7 +211,7 @@ export default function Home() {
 
   // Función para abrir el drawer de detalles con el ID de la noticia seleccionada
   const showReadDrawer = (id: string) => {
-    setSelectedNewsId(id);  // Almacena el ID de la noticia seleccionada
+    setSelectedNewsId(id); // Almacena el ID de la noticia seleccionada
     setOpenDetails(true);
   };
 
@@ -208,9 +226,9 @@ export default function Home() {
     const filterKey = parseInt(e.key);
     setSelectedFilter(filterKey);
     setButtonText(statusMap[filterKey]?.text || "Todas");
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
-      current: 1, 
+      current: 1,
     }));
   };
 
@@ -238,29 +256,29 @@ export default function Home() {
       label: "Todas",
       onClick: handleMenuClick,
     },
-    ...filterOptions.map(option => ({
+    ...filterOptions.map((option) => ({
       key: option.key,
       label: option.label,
       onClick: handleMenuClick,
     })),
   ];
-  
+
   // Tipo de las propiedades del componente Search
   type SearchProps = GetProps<typeof Input.Search>;
 
   // Función para realizar la búsqueda
-  const onSearch: SearchProps['onSearch'] = (value) => {
+  const onSearch: SearchProps["onSearch"] = (value) => {
     setSearchText(value);
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
-      current: 1,  
+      current: 1,
     }));
   };
 
   // Función para limpiar el campo de búsqueda
   const onClear = () => {
     setSearchText("");
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       current: 1,
     }));
@@ -272,8 +290,8 @@ export default function Home() {
   const handleTableChange = (paginationInfo: TablePaginationConfig) => {
     setPagination({
       ...pagination,
-      current: paginationInfo.current || 1,   
-      pageSize: paginationInfo.pageSize || 10, 
+      current: paginationInfo.current || 1,
+      pageSize: paginationInfo.pageSize || 10,
     });
   };
 
@@ -283,7 +301,12 @@ export default function Home() {
       <Header className="!bg-white">
         <div className="flex justify-between items-center mt-4 flex-row">
           <h1 className="text-black font-bold text-lg">Noticias</h1>
-          <Button type="primary" icon={<PlusOutlined />} onClick={showDrawer} shape="round">
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={showDrawer}
+            shape="round"
+          >
             Nueva Noticia
           </Button>
           <NewsCreationDrawer visible={open} onClose={onClose} />
@@ -292,23 +315,50 @@ export default function Home() {
       <Layout>
         <Content>
           <div className="mx-6 mt-6 md:mx-40 sm:mx-20">
-            <Row gutter={[16,16]}>
-              <Col span={8} xs={24} sm={24} md={8} lg={8} xl={8}><StatisticsCard title="Publicadas" value={countersData?.published || 0} color="#3f8600" loading={isCountersLoading} /></Col>
-              <Col span={8} xs={24} sm={24} md={8} lg={8} xl={8}><StatisticsCard title="Caducadas" value={countersData?.due || 0} color="#cf1322" loading={isCountersLoading} /></Col>
-              <Col span={8} xs={24} sm={24} md={8} lg={8} xl={8}><StatisticsCard title="Borradores" value={countersData?.draft || 0} color="#6b6b6b" loading={isCountersLoading} /></Col>
+            <Row gutter={[16, 16]}>
+              <Col span={8} xs={24} sm={24} md={8} lg={8} xl={8}>
+                <StatisticsCard
+                  title="Publicadas"
+                  value={countersData?.published || 0}
+                  color="#3f8600"
+                  loading={isCountersLoading}
+                />
+              </Col>
+              <Col span={8} xs={24} sm={24} md={8} lg={8} xl={8}>
+                <StatisticsCard
+                  title="Caducadas"
+                  value={countersData?.due || 0}
+                  color="#cf1322"
+                  loading={isCountersLoading}
+                />
+              </Col>
+              <Col span={8} xs={24} sm={24} md={8} lg={8} xl={8}>
+                <StatisticsCard
+                  title="Borradores"
+                  value={countersData?.draft || 0}
+                  color="#6b6b6b"
+                  loading={isCountersLoading}
+                />
+              </Col>
             </Row>
           </div>
           <div className="m-6">
             <div className="mb-3 flex justify-between">
-              <Search 
+              <Search
                 placeholder="Buscar por título"
                 style={{ width: 400 }}
                 onSearch={onSearch}
                 allowClear
                 onClear={onClear}
               />
-              <Dropdown menu={{items, selectable: true, defaultSelectedKeys: ['-1']}} placement="bottomLeft" trigger={['click']}>
-                <Button icon={<FilterFilled />} iconPosition="end">{buttonText}</Button>
+              <Dropdown
+                menu={{ items, selectable: true, defaultSelectedKeys: ["-1"] }}
+                placement="bottomLeft"
+                trigger={["click"]}
+              >
+                <Button icon={<FilterFilled />} iconPosition="end">
+                  {buttonText}
+                </Button>
               </Dropdown>
             </div>
             <Table
@@ -316,7 +366,7 @@ export default function Home() {
               dataSource={tableData}
               size="middle"
               loading={isNewsLoading}
-              pagination={{ 
+              pagination={{
                 position: ["bottomCenter"],
                 total: pagination.total,
                 current: pagination.current || 1,
@@ -329,7 +379,11 @@ export default function Home() {
               onChange={handleTableChange}
             />
             {selectedNewsId && (
-              <DetailsDrawer visible={openDetails} onClose={onCloseReadDrawer} newsId={selectedNewsId} />
+              <DetailsDrawer
+                visible={openDetails}
+                onClose={onCloseReadDrawer}
+                newsId={selectedNewsId}
+              />
             )}
           </div>
         </Content>
