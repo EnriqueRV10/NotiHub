@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { testAssignment } from "@/api/newsApi";
+import { testAssignment } from "@/features/news/api/newsApi";
 
 export const useTestAssignment = () => {
   return useMutation({

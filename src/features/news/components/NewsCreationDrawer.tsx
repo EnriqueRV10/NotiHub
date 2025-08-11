@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Drawer, Button, Space, Form, Input, message, Spin } from "antd";
-import { useCreateNews } from "@/hooks/useCreateNews";
+import { useCreateNews } from "@/features/news/hooks/useCreateNews";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 

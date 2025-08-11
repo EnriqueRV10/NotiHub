@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchSingleNews } from "@/api/newsApi";
+import { fetchSingleNews } from "@/features/news/api/newsApi";
 
 interface useSingleNewsParams {
     id: string;

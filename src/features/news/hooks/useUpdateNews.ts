@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { updateNews } from '@/api/newsApi';
+import { updateNews } from '@/features/news/api/newsApi';
 
 export const useUpdateNews = ( id: string ) => {
   return useMutation({

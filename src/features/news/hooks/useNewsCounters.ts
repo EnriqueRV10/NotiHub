@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchNewsCounters } from "@/api/newsApi";
+import { fetchNewsCounters } from "@/features/news/api/newsApi";
 
 // tipo para los parametros del hook
 interface UseNewsCountersParams {

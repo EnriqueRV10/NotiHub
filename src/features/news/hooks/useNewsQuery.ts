@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchNews } from '../api/newsApi';
+import { fetchNews } from '@/features/news/services/newsService'
 
 // tipo para los parámetros del hook
 interface UseNewsQueryParams {
@@ -26,8 +26,6 @@ export const useNewsQuery = ({
       page,
       pageSize,
       search,
-      subordinates,
-      status,
     }),
   });
 };

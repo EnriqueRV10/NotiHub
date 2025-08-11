@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNews } from '@/api/newsApi';
+import { createNews } from '@/features/news/api/newsApi';
 
 export const useCreateNews = (onSuccess?: (data: any) => void) => {
   const queryClient = useQueryClient();
