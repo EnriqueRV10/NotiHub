@@ -1,22 +1,18 @@
 import supabase from '@/supabase/supabase';
+import { FetchNewsParams, NewsCounters, NewsListItem, NewsResponse } from '../types/newsTypes';
 
 export const fetchNews = async ({
   publish_status,
   page,
   pageSize,
   search = '',
-}: {
-  publish_status?: number;
-  page: number;
-  pageSize: number;
-  search?: string;
-}) => {
+}: FetchNewsParams ): Promise<NewsResponse> => {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
   let query = supabase
     .from('Noticias')
-    .select('*', { count: 'exact' })
+    .select('id, title, author, publish_status, start_date, end_date', { count: 'exact' })
     .order('created_at', { ascending: false }) // ordenar por fecha más reciente
     .range(from, to);
 
@@ -39,22 +35,43 @@ export const fetchNews = async ({
     throw error;
   }
 
-  const filteredNews = (data ?? []).map((news) => ({
+  const results : NewsListItem[] = (data ?? []).map((news) => ({
     key: news.id,
     title: news.title,
     author: news.author,
     start: news.start_date,
     end: news.end_date,
     status: news.publish_status,
-    stats: news.read && Array.isArray(news.read)
-      ? new Set(news.read.map((r: any) => r.actor__code)).size
-      : 0,
   }));
 
   return {
-    results: filteredNews,
+    results,
     total: count ?? 0,
     currentPage: page,
     pageSize,
   };
 };
+
+export const fetchNewsCounters = async (): Promise<NewsCounters> => {
+  const {data, error} = await supabase
+    .from('Noticias')
+    .select('publish_status');
+  
+  if (error) {
+    console.error('Error Calculating conunters:', error);
+    throw error;
+  }
+
+  return (data ?? []).reduce(
+    (acc, item) => {
+      acc.total++;
+      switch(item.publish_status) {
+        case 0: acc.draft++; break;
+        case 1: acc.preview++; break;
+        case 2: acc.published++; break;
+      }
+      return acc;
+    },
+    { total: 0, draft: 0, preview: 0, published: 0}
+  )
+}

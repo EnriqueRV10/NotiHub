@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchNewsCounters } from "@/features/news/api/newsApi";
+import { fetchNewsCounters } from "../services/newsService";
 
 // tipo para los parametros del hook
 interface UseNewsCountersParams {
@@ -8,11 +8,9 @@ interface UseNewsCountersParams {
 }
 
 export const useNewsCounters = ({
-    status = 1,
-    subordinates = 'all',
 }: UseNewsCountersParams) => {
     return useQuery({
-        queryKey:['newsCounters', status, subordinates],
-        queryFn: () => fetchNewsCounters({status, subordinates}),
+        queryKey:['newsCounters'],
+        queryFn: () => fetchNewsCounters(),
     });
 };

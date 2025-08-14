@@ -316,7 +316,15 @@ export default function Home() {
         <Content>
           <div className="mx-6 mt-6 md:mx-40 sm:mx-20">
             <Row gutter={[16, 16]}>
-              <Col span={8} xs={24} sm={24} md={8} lg={8} xl={8}>
+              <Col span={8} xs={24} sm={24} md={6} lg={6} xl={6}>
+                <StatisticsCard
+                  title="Total"
+                  value={countersData?.total || 0}
+                  color="#cf1322"
+                  loading={isCountersLoading}
+                />
+              </Col>
+              <Col span={8} xs={24} sm={24} md={8} lg={6} xl={6}>
                 <StatisticsCard
                   title="Publicadas"
                   value={countersData?.published || 0}
@@ -324,15 +332,15 @@ export default function Home() {
                   loading={isCountersLoading}
                 />
               </Col>
-              <Col span={8} xs={24} sm={24} md={8} lg={8} xl={8}>
+              <Col span={8} xs={24} sm={24} md={8} lg={6} xl={6}>
                 <StatisticsCard
-                  title="Caducadas"
-                  value={countersData?.due || 0}
+                  title="Preview"
+                  value={countersData?.preview || 0}
                   color="#cf1322"
                   loading={isCountersLoading}
                 />
               </Col>
-              <Col span={8} xs={24} sm={24} md={8} lg={8} xl={8}>
+              <Col span={8} xs={24} sm={24} md={8} lg={6} xl={6}>
                 <StatisticsCard
                   title="Borradores"
                   value={countersData?.draft || 0}
