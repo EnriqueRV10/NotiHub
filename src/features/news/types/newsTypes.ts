@@ -10,6 +10,7 @@ export interface DataBaseNews {
   start_date: Date;
   end_date: Date;
   created_at: string;
+  deleted_at: string | null;
 }
 
 /**
