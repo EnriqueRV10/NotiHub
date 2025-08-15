@@ -75,3 +75,23 @@ export const fetchNewsCounters = async (): Promise<NewsCounters> => {
     { total: 0, draft: 0, preview: 0, published: 0}
   )
 }
+
+export const deleteNews = async (id: string): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from("Noticias")
+      .update({ elim: true })
+      .eq("id", parseInt(id))
+      // Solo permitir eliminación si no está ya eliminado
+      .or("alumno_eliminado.is.null,alumno_eliminado.eq.false");
+
+    if (error) {
+      //console.error("Error marking news as deleted:", error);
+      throw error;
+    }
+
+  } catch (error) {
+    //console.error("Service error in deleteNews:", error);
+    throw error;
+  }
+};
