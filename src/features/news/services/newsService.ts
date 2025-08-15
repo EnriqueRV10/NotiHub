@@ -94,6 +94,26 @@ export const fetchNewsCounters = async (): Promise<NewsCounters> => {
   );
 };
 
+/**
+ * Obtiene información de una noticia específica
+ * Equivalente a fetchSingleNews en newsApi.ts
+ */
+export const fetchSingleNews = async (id: string) => {
+  const { data, error } = await supabase
+    .from('Noticias')
+    .select('*')
+    .eq('id', parseInt(id))
+    .is('deleted_at', null) // Solo noticias activas
+    .single();
+
+  if (error) {
+    console.error('Error fetching single news:', error);
+    throw error;
+  }
+
+  return { data }; // Mantener la misma estructura que el API original
+};
+
 export const deleteNews = async (id: string): Promise<void> => {
   const { error } = await supabase
     .from("Noticias")
@@ -105,4 +125,44 @@ export const deleteNews = async (id: string): Promise<void> => {
     //console.error("Error marking news as deleted:", error);
     throw error;
   }
+};
+
+/**
+ * Actualiza una noticia existente
+ * Equivalente a updateNews en newsApi.ts
+ */
+export const updateNews = async (id: string, payload: any) => {
+  const { data, error } = await supabase
+    .from('Noticias')
+    .update(payload)
+    .eq('id', parseInt(id))
+    .is('deleted_at', null) // Solo actualizar noticias activas
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating news:', error);
+    throw error;
+  }
+
+  return data;
+};
+
+/**
+ * Crea una nueva noticia
+ * Equivalente a createNews en newsApi.ts
+ */
+export const createNews = async (payload: any) => {
+  const { data, error } = await supabase
+    .from('Noticias')
+    .insert([payload])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating news:', error);
+    throw error;
+  }
+
+  return { data }; // Mantener la misma estructura que el API original
 };

@@ -37,20 +37,6 @@ interface ComponentRule {
   value_extra?: string;
 }
 
-interface ApiPayload {
-  title: string;
-  intro: string;
-  body: string;
-  start: string;
-  end: string;
-  publish_status: number;
-  employee_assignment_policy: {
-    filter?: object;
-    exclude?: object;
-  };
-  attachements: any[];
-}
-
 interface FormValues {
   title: string;
   intro: string;
@@ -111,13 +97,13 @@ export default function EditNews({ params }: { params: { id: string } }) {
         title: data.data.title,
         intro: data.data.intro,
         dateRange: [
-          data.data.start ? dayjs(data.data.start) : null,
-          data.data.end ? dayjs(data.data.end) : null,
+          data.data.start_date ? dayjs(data.data.start) : null,
+          data.data.end_date ? dayjs(data.data.end) : null,
         ],
         status: data.data.publish_status.toString(),
         filter: filterRules,
         exclude: excludeRules,
-        body: data.data.body,
+        body: data.data.content,
       });
     }
     if (error) {
@@ -156,9 +142,9 @@ export default function EditNews({ params }: { params: { id: string } }) {
     }
   };
 
-  const formToAPI = (values: FormValues): ApiPayload | null => {
+  const formToAPI = (values: FormValues): any | null => {
     const [startDate, endDate] = values.dateRange;
-    let employee_assignment_policy: ApiPayload["employee_assignment_policy"] =
+    let employee_assignment_policy: any["employee_assignment_policy"] =
       {};
 
     const hasFilterRules = values.filter?.some(
@@ -180,7 +166,7 @@ export default function EditNews({ params }: { params: { id: string } }) {
     return {
       title: values.title.trim(),
       intro: values.intro?.trim() ?? "",
-      body: values.body.trim(),
+      body: values.content.trim(),
       start: startDate.toISOString(),
       end: endDate.toISOString(),
       publish_status: parseInt(values.status, 10),

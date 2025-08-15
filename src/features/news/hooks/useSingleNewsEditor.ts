@@ -1,18 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchSingleNews } from "@/features/news/api/newsApi";
+import { fetchSingleNews } from "../services/newsService";
 
 interface useSingleNewsParams {
     id: string;
-    subordinates?: string;
 }
 
 export const useSingleNewsEditor = ({
     id,
-    subordinates = 'all',
 }: useSingleNewsParams) => {
     return useQuery({
-        queryKey:['singleNews', id, subordinates],
-        queryFn: () => fetchSingleNews({id, subordinates}),
+        queryKey:['singleNews', id],
+        queryFn: () => fetchSingleNews(id),
         refetchOnWindowFocus: false,
     });
 };
