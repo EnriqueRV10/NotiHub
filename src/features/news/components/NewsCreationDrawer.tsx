@@ -27,11 +27,10 @@ export default function NewsCreationDrawer({
 
     const newsData = {
       title: values.title.trim(),
-      body: "",
-      intro: "",
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
-      employee_assignment_policy: {}
+      content: "",
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
+      publish_status: 0,
     };
     console.log("Noticia Creada:", newsData);
     mutate(newsData);

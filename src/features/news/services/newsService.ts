@@ -129,7 +129,6 @@ export const deleteNews = async (id: string): Promise<void> => {
 
 /**
  * Actualiza una noticia existente
- * Equivalente a updateNews en newsApi.ts
  */
 export const updateNews = async (id: string, payload: any) => {
   const { data, error } = await supabase
@@ -150,7 +149,6 @@ export const updateNews = async (id: string, payload: any) => {
 
 /**
  * Crea una nueva noticia
- * Equivalente a createNews en newsApi.ts
  */
 export const createNews = async (payload: any) => {
   const { data, error } = await supabase
@@ -164,5 +162,5 @@ export const createNews = async (payload: any) => {
     throw error;
   }
 
-  return { data }; // Mantener la misma estructura que el API original
+  return { data };
 };
