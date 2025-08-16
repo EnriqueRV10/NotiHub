@@ -10,10 +10,10 @@ import {
 import { useRouter } from "next/navigation";
 import { useSingleNewsEditor } from "@/features/news/hooks/useSingleNewsEditor";
 import dayjs from "dayjs";
-import { TabsComponent } from "@/features/news/components/TabsComponent";
+import { TabsComponent } from "@/features/news/components/forms/TabsComponent";
 import { convertApiToComponentFormat } from "@/features/news/utils/APItoForm";
 import { convertComponentToApiFormat } from "@/features/news/utils/FormtoAPI";
-import QuillEditor from "@/features/news/components/QuillEditor";
+import QuillEditor from "@/features/news/components/forms/QuillEditor";
 import { useUpdateNews } from "@/features/news/hooks/useUpdateNews";
 
 const { Header, Sider, Content } = Layout;
@@ -40,7 +40,7 @@ interface ComponentRule {
 interface FormValues {
   title: string;
   intro: string;
-  body: string;
+  content: string;
   dateRange: [dayjs.Dayjs, dayjs.Dayjs];
   status: string;
   filter: ComponentGroup[];
@@ -144,8 +144,7 @@ export default function EditNews({ params }: { params: { id: string } }) {
 
   const formToAPI = (values: FormValues): any | null => {
     const [startDate, endDate] = values.dateRange;
-    let employee_assignment_policy: any["employee_assignment_policy"] =
-      {};
+    let employee_assignment_policy: any["employee_assignment_policy"] = {};
 
     const hasFilterRules = values.filter?.some(
       (group) => group.list.length > 0

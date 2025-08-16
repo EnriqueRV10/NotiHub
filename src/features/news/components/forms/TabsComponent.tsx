@@ -11,7 +11,7 @@ import {
 } from "antd";
 import type { FormInstance, TabsProps } from "antd";
 import { AssignmentsComponent } from "./AssignmentsComponent";
-import { useTestAssignment } from "@/features/news/hooks/useTestAssignment";
+import { useTestAssignment } from "@/features/news/hooks/api/useTestAssignment";
 import { convertComponentToApiFormat } from "@/features/news/utils/FormtoAPI";
 
 const { RangePicker } = DatePicker;

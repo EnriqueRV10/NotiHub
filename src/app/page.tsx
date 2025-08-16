@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { PlusOutlined, FilterFilled, DeleteOutlined } from "@ant-design/icons";
 import {
   Button,
   Table,
@@ -15,16 +16,19 @@ import {
   Input,
   message,
   Popconfirm,
+  GetProps,
+  TablePaginationConfig,
 } from "antd";
-import { PlusOutlined, FilterFilled, DeleteOutlined } from "@ant-design/icons";
-import type { GetProps } from "antd";
-import { useNewsQuery } from "@/features/news/hooks/useNewsQuery";
-import { useNewsCounters } from "@/features/news/hooks/useNewsCounters";
-import { TablePaginationConfig } from "antd";
-import { StatisticsCard } from "@/features/news/components/StatisticsCard";
-import NewsCreationDrawer from "@/features/news/components/NewsCreationDrawer";
-import { DetailsDrawer } from "@/features/news/components/DetailsDrawer";
-import { useDeleteNews } from "@/features/news/hooks/useDeleteNews";
+import {
+  NewsCreationDrawer,
+  DetailsDrawer,
+  StatisticsCard,
+} from "@/features/news/components";
+import {
+  useDeleteNews,
+  useNewsCounters,
+  useNewsQuery,
+} from "@/features/news/hooks";
 
 interface DataType {
   key: string;

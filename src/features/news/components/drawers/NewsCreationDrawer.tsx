@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Drawer, Button, Space, Form, Input, message, Spin } from "antd";
-import { useCreateNews } from "@/features/news/hooks/useCreateNews";
+import { useCreateNews } from "@/features/news/hooks";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 
@@ -23,7 +23,7 @@ export default function NewsCreationDrawer({
 
   const handleFinish = (values: { title: string }) => {
     const startDate = dayjs();
-    const endDate = startDate.add(1, 'month');
+    const endDate = startDate.add(1, "month");
 
     const newsData = {
       title: values.title.trim(),
@@ -87,16 +87,26 @@ export default function NewsCreationDrawer({
           label="Título"
           rules={[
             { required: true, message: "Campo Título requerido" },
-            { max: 128, message: "El título no puede exceder los 128 caracteres" }
+            {
+              max: 128,
+              message: "El título no puede exceder los 128 caracteres",
+            },
           ]}
           required={false}
         >
-          <Input maxLength={128} autoComplete="off"/>
+          <Input maxLength={128} autoComplete="off" />
         </Form.Item>
         <Space>
-          <Button type="text" onClick={handleClose} disabled={isPending}>Cancelar</Button>
+          <Button type="text" onClick={handleClose} disabled={isPending}>
+            Cancelar
+          </Button>
           <Form.Item noStyle>
-            <Button type="primary" htmlType="submit" shape="round" loading={isPending}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              shape="round"
+              loading={isPending}
+            >
               Crear
             </Button>
           </Form.Item>
