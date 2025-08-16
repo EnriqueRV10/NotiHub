@@ -1,34 +1,42 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { PlusOutlined, FilterFilled, DeleteOutlined } from "@ant-design/icons";
 import {
-  Button,
   Table,
   TableColumnsType,
   Layout,
-  Col,
   Row,
+  Col,
   Badge,
-  MenuProps,
-  Dropdown,
-  Input,
-  message,
   Popconfirm,
-  GetProps,
-  TablePaginationConfig,
+  Button,
 } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+
+// Hooks consolidados
+import { useNewsTableState } from "@/features/news/hooks/state/useNewsTableState";
+import { useNewsOperations } from "@/features/news/hooks/state/useNewsOperations";
+
+// Hooks de datos existentes
+import { useNewsQuery } from "@/features/news/hooks/api/useNewsQuery";
+import { useNewsCounters } from "@/features/news/hooks/api/useNewsCounters";
+
+// Componentes separados
+import { NewsHeader } from "@/features/news/components/layout/NewsHeader";
+import { NewsFilters } from "@/features/news/components/filters/NewsFilters";
+import { StatisticsCard } from "@/features/news/components/stats/StatisticsCard";
+import NewsCreationDrawer from "@/features/news/components/drawers/NewsCreationDrawer";
+import { DetailsDrawer } from "@/features/news/components/drawers/DetailsDrawer";
+
+// Constantes y tipos
+import { STATUS_MAP } from "@/features/news/constants/statusMap";
 import {
-  NewsCreationDrawer,
-  DetailsDrawer,
-  StatisticsCard,
-} from "@/features/news/components";
-import {
-  useDeleteNews,
-  useNewsCounters,
-  useNewsQuery,
-} from "@/features/news/hooks";
+  TABLE_CONFIG,
+  COLUMN_WIDTHS,
+} from "@/features/news/constants/tableConfig";
+
+const { Header, Content } = Layout;
 
 interface DataType {
   key: string;
@@ -40,39 +48,125 @@ interface DataType {
   stats: string;
 }
 
-const statusMap: Record<number, { text: string; color: string }> = {
-  0: { text: "Borrador", color: "grey" },
-  1: { text: "Preview", color: "orange" },
-  2: { text: "Publicado", color: "green" },
-};
+export default function NewsListPage() {
+  const router = useRouter();
 
-const { Header, Footer, Sider, Content } = Layout;
-const { Search } = Input;
+  // Hooks consolidados de estado y operaciones
+  const tableState = useNewsTableState();
+  const newsOperations = useNewsOperations({
+    enableNotifications: true,
+    autoRefresh: true,
+  });
 
-const filterOptions = Object.entries(statusMap).map(([key, { text }]) => ({
-  key,
-  label: text,
-}));
+  // Hook para obtener datos de noticias
+  const {
+    data: newsData,
+    error: errorNews,
+    isLoading: isNewsLoading,
+    refetch: newsQueryRefetch,
+  } = useNewsQuery({
+    publish_status:
+      tableState.state.filters.status !== null
+        ? tableState.state.filters.status
+        : undefined,
+    page: tableState.state.pagination.current,
+    pageSize: tableState.state.pagination.pageSize,
+    search: tableState.state.filters.search,
+  });
 
-export default function Home() {
+  // Hook para obtener contadores
+  const {
+    data: countersData,
+    error: errorCounters,
+    isLoading: isCountersLoading,
+    refetch: countersRefetch,
+  } = useNewsCounters({});
+
+  // Actualizar paginación cuando se cargan los datos
+  useEffect(() => {
+    if (newsData) {
+      tableState.actions.pagination.update({
+        total: newsData.total,
+        current: newsData.currentPage,
+        pageSize: newsData.pageSize,
+      });
+    }
+  }, [newsData, tableState.actions.pagination]);
+
+  // Manejador de errores de carga
+  useEffect(() => {
+    if (errorNews) {
+      newsOperations.utils.handleError(
+        errorNews,
+        "Error al cargar las noticias. Por favor, intente de nuevo más tarde."
+      );
+    }
+  }, [errorNews, newsOperations.utils]);
+
+  // Manejadores de eventos
+  const handleCreateNews = useCallback(() => {
+    tableState.actions.drawers.openCreation();
+  }, [tableState.actions.drawers]);
+
+  const handleDeleteNews = useCallback(
+    async (key: string) => {
+      try {
+        await newsOperations.operations.delete(key, {
+          onSuccess: () => {
+            newsQueryRefetch();
+            countersRefetch();
+          },
+        });
+      } catch (error) {
+        // Error ya manejado por newsOperations
+      }
+    },
+    [newsOperations.operations, newsQueryRefetch, countersRefetch]
+  );
+
+  const handleTableChange = useCallback(
+    (paginationInfo: any) => {
+      tableState.actions.pagination.update(paginationInfo);
+    },
+    [tableState.actions.pagination]
+  );
+
+  const handleRowClick = useCallback(
+    (record: DataType) => {
+      router.push(`/${record.key}`);
+    },
+    [router]
+  );
+
+  const handleStatsClick = useCallback(
+    (record: DataType) => {
+      tableState.actions.drawers.openDetails(record.key);
+    },
+    [tableState.actions.drawers]
+  );
+
+  // Configuración de columnas de la tabla
   const columns: TableColumnsType<DataType> = [
     {
       title: "Título",
       dataIndex: "title",
       key: "title",
+      width: COLUMN_WIDTHS.title,
       render: (text, record) => (
-        <a onClick={() => router.push(`/${record.key}`)}>{text}</a>
+        <a onClick={() => handleRowClick(record)}>{text}</a>
       ),
     },
     {
       title: "Creado por",
       dataIndex: "author",
       key: "author",
+      width: COLUMN_WIDTHS.author,
     },
     {
       title: "Inicio",
       dataIndex: "start",
       key: "start",
+      width: COLUMN_WIDTHS.startDate,
       sorter: (a, b) =>
         new Date(a.start).getTime() - new Date(b.start).getTime(),
       render: (start: string) => {
@@ -89,6 +183,7 @@ export default function Home() {
       title: "Fin",
       dataIndex: "end",
       key: "end",
+      width: COLUMN_WIDTHS.endDate,
       render: (end: string) => {
         const formattedDate = new Date(end).toLocaleDateString("es-ES", {
           day: "2-digit",
@@ -102,8 +197,9 @@ export default function Home() {
       title: "Estado",
       dataIndex: "status",
       key: "status",
+      width: COLUMN_WIDTHS.status,
       render: (status: number) => {
-        const { text, color } = statusMap[status] || {
+        const { text, color } = STATUS_MAP[status] || {
           text: "Desconocido",
           color: "gray",
         };
@@ -114,292 +210,126 @@ export default function Home() {
       title: "Estadísticas",
       dataIndex: "stats",
       key: "stats",
+      width: COLUMN_WIDTHS.stats,
       render: (text, record) => (
-        <a onClick={() => showReadDrawer(record.key)}>{text}</a>
+        <a onClick={() => handleStatsClick(record)}>{text}</a>
       ),
       align: "center",
-      width: 200,
     },
     {
       key: "action",
+      width: COLUMN_WIDTHS.actions,
       align: "center",
       render: (_, record) => (
         <Popconfirm
           title="¿Estás seguro de eliminar esta noticia?"
-          onConfirm={() => handleDelete(record.key)}
+          onConfirm={() => handleDeleteNews(record.key)}
+          okText="Sí"
+          cancelText="No"
         >
           <Button
             type="text"
             danger
             icon={<DeleteOutlined />}
-            loading={deleteNewsMutation.isPending}
-            disabled={deleteNewsMutation.isPending}
+            loading={newsOperations.loading.delete}
+            disabled={newsOperations.loading.delete}
+            size="small"
           />
         </Popconfirm>
       ),
     },
   ];
 
-  const [open, setOpen] = useState(false); // Estado para controlar si el Drawer
-  const [openDetails, setOpenDetails] = useState(false); // Estado para controlar Drawer de detalles sobre lecturas
-  const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null); // Estado para almacenar el ID de la noticia seleccionada
-  const [selectedFilter, setSelectedFilter] = useState<number>(-1); // Estado para almacenar el filtro seleccionado
-  const [buttonText, setButtonText] = useState<string>(
-    statusMap[-1]?.text || "Todas"
-  ); // Estado para almacenar el texto del botón
-  const [searchText, setSearchText] = useState<string>("");
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-  });
-  const [messageApi, contextHolder] = message.useMessage();
-
-  // Hook para eliminar noticias
-  const deleteNewsMutation = useDeleteNews();
-
-  // Hook para obtener las noticias con paginación
-  const {
-    data: newsData,
-    error: errorNews,
-    isLoading: isNewsLoading,
-    refetch: newsQueryRefetch,
-  } = useNewsQuery({
-    publish_status: selectedFilter !== -1 ? selectedFilter : undefined,
-    page: pagination.current,
-    pageSize: pagination.pageSize,
-    search: searchText,
-  });
-
-  // Hook para obtener los contadores de noticias
-  const {
-    data: countersData,
-    error: errorCounters,
-    isLoading: isCountersLoading,
-    refetch: countersRefetch,
-  } = useNewsCounters({});
-
-  // Actualiza el estado de paginación cuando se cargan los datos
-  useEffect(() => {
-    if (newsData) {
-      setPagination((prev) => ({
-        ...prev,
-        total: newsData.total,
-        current: newsData.currentPage,
-        pageSize: newsData.pageSize,
-      }));
-    }
-  }, [newsData]);
-
-  useEffect(() => {
-    if (errorNews) {
-      messageApi.error({
-        content:
-          "Error al cargar las noticias. Por favor, intente de nuevo más tarde.",
-        duration: 5,
-      });
-    }
-  }, [errorNews, messageApi]);
-
-  const router = useRouter();
-
-  // Función para abrir el drawer de creación de noticias
-  const showDrawer = () => {
-    setOpen(true);
-  };
-
-  // Función para cerrar el drawer de creación de noticias
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  // Función para abrir el drawer de detalles con el ID de la noticia seleccionada
-  const showReadDrawer = (id: string) => {
-    setSelectedNewsId(id); // Almacena el ID de la noticia seleccionada
-    setOpenDetails(true);
-  };
-
-  // Función para cerrar el drawer de detalles
-  const onCloseReadDrawer = () => {
-    setOpenDetails(false);
-    setTimeout(() => setSelectedNewsId(null), 300); // Limpia el ID seleccionado
-  };
-
-  // Función para manejar el click en el menú desplegable
-  const handleMenuClick = (e: { key: string }) => {
-    const filterKey = parseInt(e.key);
-    setSelectedFilter(filterKey);
-    setButtonText(statusMap[filterKey]?.text || "Todas");
-    setPagination((prev) => ({
-      ...prev,
-      current: 1,
-    }));
-  };
-
-  const handleDelete = (key: string) => {
-    deleteNewsMutation.mutate(key, {
-      onSuccess: () => {
-        messageApi.success({
-          content: `Noticia eliminada`,
-        });
-        newsQueryRefetch();
-        countersRefetch();
-      },
-      onError: (error) => {
-        messageApi.error({
-          content: "Error al eliminar la noticia",
-        });
-      },
-    });
-  };
-
-  // Opciones del menú desplegable
-  const items: MenuProps["items"] = [
-    {
-      key: "-1",
-      label: "Todas",
-      onClick: handleMenuClick,
-    },
-    ...filterOptions.map((option) => ({
-      key: option.key,
-      label: option.label,
-      onClick: handleMenuClick,
-    })),
-  ];
-
-  // Tipo de las propiedades del componente Search
-  type SearchProps = GetProps<typeof Input.Search>;
-
-  // Función para realizar la búsqueda
-  const onSearch: SearchProps["onSearch"] = (value) => {
-    setSearchText(value);
-    setPagination((prev) => ({
-      ...prev,
-      current: 1,
-    }));
-  };
-
-  // Función para limpiar el campo de búsqueda
-  const onClear = () => {
-    setSearchText("");
-    setPagination((prev) => ({
-      ...prev,
-      current: 1,
-    }));
-  };
-
-  const tableData = newsData?.results || []; // Datos de la tabla
-
-  // Función para manejar el cambio de página en la tabla
-  const handleTableChange = (paginationInfo: TablePaginationConfig) => {
-    setPagination({
-      ...pagination,
-      current: paginationInfo.current || 1,
-      pageSize: paginationInfo.pageSize || 10,
-    });
-  };
+  const tableData = newsData?.results || [];
 
   return (
     <Layout className="!min-h-screen">
-      {contextHolder}
+      {newsOperations.contextHolder}
+
       <Header className="!bg-white">
-        <div className="flex justify-between items-center mt-4 flex-row">
-          <h1 className="text-black font-bold text-lg">Noticias</h1>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={showDrawer}
-            shape="round"
-          >
-            Nueva Noticia
-          </Button>
-          <NewsCreationDrawer visible={open} onClose={onClose} />
-        </div>
+        <NewsHeader
+          onCreateNews={handleCreateNews}
+          isCreating={newsOperations.loading.create}
+        />
       </Header>
-      <Layout>
-        <Content>
-          <div className="mx-6 mt-6 md:mx-40 sm:mx-20">
-            <Row gutter={[16, 16]}>
-              <Col span={8} xs={24} sm={24} md={6} lg={6} xl={6}>
-                <StatisticsCard
-                  title="Total"
-                  value={countersData?.total || 0}
-                  color="#cf1322"
-                  loading={isCountersLoading}
-                />
-              </Col>
-              <Col span={8} xs={24} sm={24} md={8} lg={6} xl={6}>
-                <StatisticsCard
-                  title="Publicadas"
-                  value={countersData?.published || 0}
-                  color="#3f8600"
-                  loading={isCountersLoading}
-                />
-              </Col>
-              <Col span={8} xs={24} sm={24} md={8} lg={6} xl={6}>
-                <StatisticsCard
-                  title="Preview"
-                  value={countersData?.preview || 0}
-                  color="#cf1322"
-                  loading={isCountersLoading}
-                />
-              </Col>
-              <Col span={8} xs={24} sm={24} md={8} lg={6} xl={6}>
-                <StatisticsCard
-                  title="Borradores"
-                  value={countersData?.draft || 0}
-                  color="#6b6b6b"
-                  loading={isCountersLoading}
-                />
-              </Col>
-            </Row>
-          </div>
-          <div className="m-6">
-            <div className="mb-3 flex justify-between">
-              <Search
-                placeholder="Buscar por título"
-                style={{ width: 400 }}
-                onSearch={onSearch}
-                allowClear
-                onClear={onClear}
-              />
-              <Dropdown
-                menu={{ items, selectable: true, defaultSelectedKeys: ["-1"] }}
-                placement="bottomLeft"
-                trigger={["click"]}
-              >
-                <Button icon={<FilterFilled />} iconPosition="end">
-                  {buttonText}
-                </Button>
-              </Dropdown>
-            </div>
-            <Table
-              columns={columns}
-              dataSource={tableData}
-              size="middle"
-              loading={isNewsLoading}
-              pagination={{
-                position: ["bottomCenter"],
-                total: pagination.total,
-                current: pagination.current || 1,
-                pageSize: pagination.pageSize || 10,
-              }}
-              locale={{
-                emptyText: "No hay Noticias",
-              }}
-              scroll={{ x: 600 }}
-              onChange={handleTableChange}
+
+      <Content className="p-6">
+        {/* Estadísticas */}
+        <Row gutter={[16, 16]} className="mb-6">
+          <Col xs={24} sm={12} md={6}>
+            <StatisticsCard
+              title="Total"
+              value={countersData?.total || 0}
+              loading={isCountersLoading}
+              color="#1890ff"
             />
-            {selectedNewsId && (
-              <DetailsDrawer
-                visible={openDetails}
-                onClose={onCloseReadDrawer}
-                newsId={selectedNewsId}
-              />
-            )}
-          </div>
-        </Content>
-      </Layout>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <StatisticsCard
+              title="Publicadas"
+              value={countersData?.published || 0}
+              loading={isCountersLoading}
+              color="#52c41a"
+            />
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <StatisticsCard
+              title="Preview"
+              value={countersData?.preview || 0}
+              loading={isCountersLoading}
+              color="#faad14"
+            />
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <StatisticsCard
+              title="Borradores"
+              value={countersData?.draft || 0}
+              loading={isCountersLoading}
+              color="#8c8c8c"
+            />
+          </Col>
+        </Row>
+
+        {/* Filtros */}
+        <NewsFilters
+          filters={tableState.state.filters}
+          onFiltersChange={tableState.actions.filters.update}
+          onClearFilters={tableState.actions.filters.clear}
+          disabled={isNewsLoading}
+        />
+
+        {/* Tabla */}
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          loading={isNewsLoading}
+          pagination={{
+            current: tableState.state.pagination.current,
+            pageSize: tableState.state.pagination.pageSize,
+            total: tableState.state.pagination.total,
+            showSizeChanger: TABLE_CONFIG.showSizeChanger,
+            showQuickJumper: TABLE_CONFIG.showQuickJumper,
+            showTotal: TABLE_CONFIG.showTotal,
+            pageSizeOptions: TABLE_CONFIG.pageSizeOptions,
+          }}
+          onChange={handleTableChange}
+          scroll={{ x: "max-content" }}
+          size="middle"
+          rowKey="key"
+        />
+      </Content>
+
+      {/* Drawers */}
+      <NewsCreationDrawer
+        visible={tableState.state.drawers.creation.open}
+        onClose={tableState.actions.drawers.closeCreation}
+      />
+
+      <DetailsDrawer
+        visible={tableState.state.drawers.details.open}
+        onClose={tableState.actions.drawers.closeDetails}
+        newsId={tableState.state.drawers.details.newsId || ""}
+      />
     </Layout>
   );
 }

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteNews } from "../services/newsService";
+import { deleteNews } from "../../services/newsService";
 
 export const useDeleteNews = () => {
   const queryClient = useQueryClient();

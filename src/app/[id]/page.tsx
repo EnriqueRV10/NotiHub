@@ -8,13 +8,13 @@ import {
   SaveOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useSingleNewsEditor } from "@/features/news/hooks/useSingleNewsEditor";
+import { useSingleNewsEditor } from "@/features/news/hooks/api/useSingleNewsEditor";
 import dayjs from "dayjs";
 import { TabsComponent } from "@/features/news/components/forms/TabsComponent";
 import { convertApiToComponentFormat } from "@/features/news/utils/APItoForm";
 import { convertComponentToApiFormat } from "@/features/news/utils/FormtoAPI";
 import QuillEditor from "@/features/news/components/forms/QuillEditor";
-import { useUpdateNews } from "@/features/news/hooks/useUpdateNews";
+import { useUpdateNews } from "@/features/news/hooks/api/useUpdateNews";
 
 const { Header, Sider, Content } = Layout;
 
