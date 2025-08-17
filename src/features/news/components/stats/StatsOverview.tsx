@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col } from "antd";
-import { StatisticsCard } from "@/features/news/components/stats/StatisticsCard";
+import { StatisticsCard } from "@/features/news/components";
 import { NewsCounters } from "../../types/newsTypes";
 
 interface StatsOverviewProps {

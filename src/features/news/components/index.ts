@@ -1,6 +1,10 @@
 export { DetailsDrawer } from "./drawers/DetailsDrawer";
 export { default as NewsCreationDrawer } from "./drawers/NewsCreationDrawer";
+export { NewsFilters } from "./filters/NewsFilters";
 export { AssignmentsComponent } from "./forms/AssignmentsComponent";
 export { default as QuillEditor } from "./forms/QuillEditor";
 export { TabsComponent } from "./forms/TabsComponent";
+export { default as NewsHeader } from "./layout/NewsHeader";
 export { StatisticsCard } from "./stats/StatisticsCard";
+export { default as StatsOverview } from "./stats/StatsOverview";
+export { default as NewsTable } from "./table/NewsTable";

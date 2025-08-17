@@ -1,5 +1,5 @@
 import { Drawer, Button, Space, Table, TableColumnsType, message } from "antd";
-import { useSingleNews } from "@/features/news/hooks/api/useSingleNews";
+import { useSingleNews } from "@/features/news/hooks";
 import React, { useEffect } from "react";
 import { writeFile, utils } from "xlsx";
 

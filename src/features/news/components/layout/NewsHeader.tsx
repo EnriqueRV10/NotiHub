@@ -8,11 +8,11 @@ interface NewsHeaderProps {
   title?: string;
 }
 
-export const NewsHeader: React.FC<NewsHeaderProps> = ({
+export default function NewsHeader({
   onCreateNews,
   isCreating = false,
   title = "Noticias",
-}) => {
+}: NewsHeaderProps) {
   return (
     <div className="flex flex-row justify-between items-center mt-4">
       <h1 className="text-black font-bold text-lg">
@@ -29,4 +29,4 @@ export const NewsHeader: React.FC<NewsHeaderProps> = ({
       </h1>
     </div>
   );
-};
+}

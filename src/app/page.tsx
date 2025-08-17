@@ -4,21 +4,22 @@ import React, { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Layout } from "antd";
 
-// Hooks consolidados
-import { useNewsTableState } from "@/features/news/hooks/state/useNewsTableState";
-import { useNewsOperations } from "@/features/news/hooks/state/useNewsOperations";
-
-// Hooks de datos existentes
-import { useNewsQuery } from "@/features/news/hooks/api/useNewsQuery";
-import { useNewsCounters } from "@/features/news/hooks/api/useNewsCounters";
+import {
+  useNewsQuery, // hook para obtener noticias
+  useNewsCounters, // hook para obtener contadores
+  useNewsTableState, // hook para manejar el estado de la tabla
+  useNewsOperations, // hook para manejar operaciones de noticias
+} from "@/features/news/hooks";
 
 // Componentes separados
-import { NewsHeader } from "@/features/news/components/layout/NewsHeader";
-import StatsOverview from "@/features/news/components/stats/StatsOverview";
-import { NewsFilters } from "@/features/news/components/filters/NewsFilters";
-import NewsTable from "@/features/news/components/table/NewsTable";
-import NewsCreationDrawer from "@/features/news/components/drawers/NewsCreationDrawer";
-import { DetailsDrawer } from "@/features/news/components/drawers/DetailsDrawer";
+import {
+  NewsHeader,
+  StatsOverview,
+  NewsFilters,
+  NewsTable,
+  NewsCreationDrawer,
+  DetailsDrawer,
+} from "@/features/news/components";
 
 const { Header, Content } = Layout;
 
