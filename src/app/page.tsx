@@ -2,17 +2,7 @@
 
 import React, { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Table,
-  TableColumnsType,
-  Layout,
-  Row,
-  Col,
-  Badge,
-  Popconfirm,
-  Button,
-} from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { Layout } from "antd";
 
 // Hooks consolidados
 import { useNewsTableState } from "@/features/news/hooks/state/useNewsTableState";
@@ -24,21 +14,15 @@ import { useNewsCounters } from "@/features/news/hooks/api/useNewsCounters";
 
 // Componentes separados
 import { NewsHeader } from "@/features/news/components/layout/NewsHeader";
+import StatsOverview from "@/features/news/components/stats/StatsOverview";
 import { NewsFilters } from "@/features/news/components/filters/NewsFilters";
-import { StatisticsCard } from "@/features/news/components/stats/StatisticsCard";
+import NewsTable from "@/features/news/components/table/NewsTable";
 import NewsCreationDrawer from "@/features/news/components/drawers/NewsCreationDrawer";
 import { DetailsDrawer } from "@/features/news/components/drawers/DetailsDrawer";
 
-// Constantes y tipos
-import { STATUS_MAP } from "@/features/news/constants/statusMap";
-import {
-  TABLE_CONFIG,
-  COLUMN_WIDTHS,
-} from "@/features/news/constants/tableConfig";
-
 const { Header, Content } = Layout;
 
-interface DataType {
+export interface DataType {
   key: string;
   title: string;
   author: string;
@@ -81,6 +65,8 @@ export default function NewsListPage() {
     isLoading: isCountersLoading,
     refetch: countersRefetch,
   } = useNewsCounters({});
+
+  const tableData = newsData?.results || [];
 
   // Actualizar paginación cuando se cargan los datos
   useEffect(() => {
@@ -145,103 +131,6 @@ export default function NewsListPage() {
     [tableState.actions.drawers]
   );
 
-  // Configuración de columnas de la tabla
-  const columns: TableColumnsType<DataType> = [
-    {
-      title: "Título",
-      dataIndex: "title",
-      key: "title",
-      width: COLUMN_WIDTHS.title,
-      render: (text, record) => (
-        <a onClick={() => handleRowClick(record)}>{text}</a>
-      ),
-    },
-    {
-      title: "Creado por",
-      dataIndex: "author",
-      key: "author",
-      width: COLUMN_WIDTHS.author,
-    },
-    {
-      title: "Inicio",
-      dataIndex: "start",
-      key: "start",
-      width: COLUMN_WIDTHS.startDate,
-      sorter: (a, b) =>
-        new Date(a.start).getTime() - new Date(b.start).getTime(),
-      render: (start: string) => {
-        const formattedDate = new Date(start).toLocaleDateString("es-ES", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        });
-        return <span>{formattedDate}</span>;
-      },
-      showSorterTooltip: false,
-    },
-    {
-      title: "Fin",
-      dataIndex: "end",
-      key: "end",
-      width: COLUMN_WIDTHS.endDate,
-      render: (end: string) => {
-        const formattedDate = new Date(end).toLocaleDateString("es-ES", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        });
-        return <span>{formattedDate}</span>;
-      },
-    },
-    {
-      title: "Estado",
-      dataIndex: "status",
-      key: "status",
-      width: COLUMN_WIDTHS.status,
-      render: (status: number) => {
-        const { text, color } = STATUS_MAP[status] || {
-          text: "Desconocido",
-          color: "gray",
-        };
-        return <Badge color={color} text={text} />;
-      },
-    },
-    {
-      title: "Estadísticas",
-      dataIndex: "stats",
-      key: "stats",
-      width: COLUMN_WIDTHS.stats,
-      render: (text, record) => (
-        <a onClick={() => handleStatsClick(record)}>{text}</a>
-      ),
-      align: "center",
-    },
-    {
-      key: "action",
-      width: COLUMN_WIDTHS.actions,
-      align: "center",
-      render: (_, record) => (
-        <Popconfirm
-          title="¿Estás seguro de eliminar esta noticia?"
-          onConfirm={() => handleDeleteNews(record.key)}
-          okText="Sí"
-          cancelText="No"
-        >
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            loading={newsOperations.loading.delete}
-            disabled={newsOperations.loading.delete}
-            size="small"
-          />
-        </Popconfirm>
-      ),
-    },
-  ];
-
-  const tableData = newsData?.results || [];
-
   return (
     <Layout className="!min-h-screen">
       {newsOperations.contextHolder}
@@ -255,40 +144,10 @@ export default function NewsListPage() {
 
       <Content className="p-6">
         {/* Estadísticas */}
-        <Row gutter={[16, 16]} className="mb-6">
-          <Col xs={24} sm={12} md={6}>
-            <StatisticsCard
-              title="Total"
-              value={countersData?.total || 0}
-              loading={isCountersLoading}
-              color="#1890ff"
-            />
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <StatisticsCard
-              title="Publicadas"
-              value={countersData?.published || 0}
-              loading={isCountersLoading}
-              color="#52c41a"
-            />
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <StatisticsCard
-              title="Preview"
-              value={countersData?.preview || 0}
-              loading={isCountersLoading}
-              color="#faad14"
-            />
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <StatisticsCard
-              title="Borradores"
-              value={countersData?.draft || 0}
-              loading={isCountersLoading}
-              color="#8c8c8c"
-            />
-          </Col>
-        </Row>
+        <StatsOverview
+          countersData={countersData}
+          isCountersLoading={isCountersLoading}
+        />
 
         {/* Filtros */}
         <NewsFilters
@@ -299,23 +158,16 @@ export default function NewsListPage() {
         />
 
         {/* Tabla */}
-        <Table
-          columns={columns}
+        <NewsTable
           dataSource={tableData}
           loading={isNewsLoading}
-          pagination={{
-            current: tableState.state.pagination.current,
-            pageSize: tableState.state.pagination.pageSize,
-            total: tableState.state.pagination.total,
-            showSizeChanger: TABLE_CONFIG.showSizeChanger,
-            showQuickJumper: TABLE_CONFIG.showQuickJumper,
-            showTotal: TABLE_CONFIG.showTotal,
-            pageSizeOptions: TABLE_CONFIG.pageSizeOptions,
-          }}
+          tableState={tableState.state.pagination}
           onChange={handleTableChange}
-          scroll={{ x: "max-content" }}
-          size="middle"
-          rowKey="key"
+          handleRowClick={handleRowClick}
+          handleDeleteNews={handleDeleteNews}
+          handleStatsClick={handleStatsClick}
+          deleteBuTtonLoading={newsOperations.loading.delete}
+          deleteButtonDisabled={newsOperations.loading.delete}
         />
       </Content>
 
