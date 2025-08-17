@@ -48,26 +48,6 @@ export const TabsComponent = ({ form }: TabsComponentProps) => {
     }
   }, [data, error, messageApi]);
 
-  const popoverContent = (
-    <div>
-      <p>
-        Aplica para <strong>{data?.count}</strong> elementos
-      </p>
-      <Divider plain>Ejemplos</Divider>
-      <ul className="list-disc px-4">
-        {data?.examples &&
-        Array.isArray(data.examples) &&
-        data.examples.length > 0 ? (
-          data.examples.map((item: string, index: number) => (
-            <li key={index}>{item}</li>
-          ))
-        ) : (
-          <li className="list-none">No hay elementos asignados</li>
-        )}
-      </ul>
-    </div>
-  );
-
   const itemstab: TabsProps["items"] = [
     {
       key: "1",
@@ -111,26 +91,7 @@ export const TabsComponent = ({ form }: TabsComponentProps) => {
       children: (
         <div className="p-4">
           {contextHolder}
-          <Popover
-            content={popoverContent}
-            placement="left"
-            trigger="click"
-            open={popoverOpen}
-            onOpenChange={(open) => {
-              setPopoverOpen(open);
-            }}
-          >
-            <Button
-              shape="round"
-              onClick={() => {
-                setPopoverOpen(false);
-                handleTest();
-              }}
-              loading={isPending}
-            >
-              Probar Asignación
-            </Button>
-          </Popover>
+
           <Divider>Incluir</Divider>
           <AssignmentsComponent form={form} name="filter" />
           <Divider>Excluir</Divider>
