@@ -28,8 +28,11 @@ export const DetailsDrawer = ({
   newsId,
 }: DrawerComponentProps) => {
   // Hook para obtener la informacion de una noticia
+  const shouldFetch = visible && !!newsId && newsId !== "NaN";
+
   const { data, error, isLoading } = useSingleNews({
     id: newsId,
+    enabled: shouldFetch,
   });
   const [messageApi, contextHolder] = message.useMessage();
 
