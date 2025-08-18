@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Tabs,
   Form,
   Input,
   DatePicker,
-  Button,
   Divider,
-  Popover,
   message,
 } from "antd";
 import type { FormInstance, TabsProps } from "antd";
 import { AssignmentsComponent } from "./AssignmentsComponent";
-import { useTestAssignment } from "@/features/news/hooks";
-import { convertComponentToApiFormat } from "@/features/news/utils/FormtoAPI";
 
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
@@ -22,31 +18,7 @@ interface TabsComponentProps {
 }
 
 export const TabsComponent = ({ form }: TabsComponentProps) => {
-  const { mutate, data, error, isPending } = useTestAssignment();
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-
-  const handleTest = () => {
-    const payload = {
-      exclude: convertComponentToApiFormat(form.getFieldValue("exclude")),
-      filter: convertComponentToApiFormat(form.getFieldValue("filter")),
-    };
-
-    mutate(payload);
-  };
-
-  useEffect(() => {
-    if (data) {
-      setPopoverOpen(true);
-    }
-    if (error) {
-      setPopoverOpen(false);
-      messageApi.error({
-        content: "Error al probar la asignación",
-        duration: 5,
-      });
-    }
-  }, [data, error, messageApi]);
 
   const itemstab: TabsProps["items"] = [
     {
