@@ -204,7 +204,7 @@ export default function EditNews({ params }: { params: { id: string } }) {
         layout="vertical"
         className="flex flex-col h-full"
       >
-        <Header className="!bg-white flex justify-between items-center px-6 py-4">
+        <Header className="bg-white! flex justify-between items-center px-6 py-4">
           <div className="flex items-center">
             <Button
               icon={<RollbackOutlined />}

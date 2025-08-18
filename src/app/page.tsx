@@ -133,10 +133,10 @@ export default function NewsListPage() {
   );
 
   return (
-    <Layout className="!min-h-screen">
+    <Layout className="min-h-screen!">
       {newsOperations.contextHolder}
 
-      <Header className="!bg-white">
+      <Header className="bg-white!">
         <NewsHeader
           onCreateNews={handleCreateNews}
           isCreating={newsOperations.loading.create}
