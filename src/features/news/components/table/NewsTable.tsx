@@ -92,16 +92,16 @@ export default function NewsTable({
         return <Badge color={color} text={text} />;
       },
     },
-    {
-      title: "Estadísticas",
-      dataIndex: "stats",
-      key: "stats",
-      width: COLUMN_WIDTHS.stats,
-      render: (text, record) => (
-        <a onClick={() => handleStatsClick(record)}>{text}</a>
-      ),
-      align: "center",
-    },
+    // {
+    //   title: "Estadísticas",
+    //   dataIndex: "stats",
+    //   key: "stats",
+    //   width: COLUMN_WIDTHS.stats,
+    //   render: (text, record) => (
+    //     <a onClick={() => handleStatsClick(record)}>{text}</a>
+    //   ),
+    //   align: "center",
+    // },
     {
       key: "action",
       width: COLUMN_WIDTHS.actions,

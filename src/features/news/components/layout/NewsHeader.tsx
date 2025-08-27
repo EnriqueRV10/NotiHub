@@ -15,18 +15,17 @@ export default function NewsHeader({
 }: NewsHeaderProps) {
   return (
     <div className="flex flex-row justify-between items-center mt-4">
-      <h1 className="text-black font-bold text-lg">
-        <Button
-          type="primary"
-          shape="round"
-          icon={<PlusOutlined />}
-          onClick={onCreateNews}
-          loading={isCreating}
-          disabled={isCreating}
-        >
-          Nueva Noticia
-        </Button>
-      </h1>
+      <h1 className="text-black font-bold text-lg">NotiHub</h1>
+      <Button
+        type="primary"
+        shape="round"
+        icon={<PlusOutlined />}
+        onClick={onCreateNews}
+        loading={isCreating}
+        disabled={isCreating}
+      >
+        Nueva Noticia
+      </Button>
     </div>
   );
 }
