@@ -1,13 +1,16 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Inter } from "next/font/google";
 import "./globals.css";
-import ClientWrapper from "./ClientWrapper"; // Importa el componente cliente
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { ConfigProvider } from "antd";
+import React from "react";
+import esEs from "antd/locale/es_ES";
+
+const queryClient = new QueryClient();
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Noticias",
-};
 
 export default function RootLayout({
   children,
@@ -17,7 +20,19 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <ClientWrapper>{children}</ClientWrapper>
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#fa541c",
+              colorLink: "#fa541c",
+            },
+          }}
+          locale={esEs}
+        >
+          <QueryClientProvider client={queryClient}>
+            <AntdRegistry>{children}</AntdRegistry>
+          </QueryClientProvider>
+        </ConfigProvider>
       </body>
     </html>
   );
