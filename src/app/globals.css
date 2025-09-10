@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
@@ -24,8 +24,4 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
-}
-
-:root {
-    background-color: #F9F9F9;
 }

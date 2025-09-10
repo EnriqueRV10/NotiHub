@@ -20,15 +20,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <ConfigProvider
-          theme={{
-            token: {
-              colorPrimary: "#fa541c",
-              colorLink: "#fa541c",
-            },
-          }}
-          locale={esEs}
-        >
+        <ConfigProvider locale={esEs}>
           <QueryClientProvider client={queryClient}>
             <AntdRegistry>{children}</AntdRegistry>
           </QueryClientProvider>

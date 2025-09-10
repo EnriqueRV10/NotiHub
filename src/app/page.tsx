@@ -136,7 +136,7 @@ export default function NewsListPage() {
     <Layout className="min-h-screen!">
       {newsOperations.contextHolder}
 
-      <Header className="bg-white!">
+      <Header>
         <NewsHeader
           onCreateNews={handleCreateNews}
           isCreating={newsOperations.loading.create}
