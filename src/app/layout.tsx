@@ -4,12 +4,12 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { ConfigProvider, Layout, Menu, MenuProps } from "antd";
+import { ConfigProvider, Layout, Menu, MenuProps, Breadcrumb } from "antd";
 import React, { useState } from "react";
 import esEs from "antd/locale/es_ES";
 import { useRouter, usePathname } from "next/navigation";
 import { HomeOutlined, PieChartOutlined } from "@ant-design/icons";
-import path from "path";
+import { capitalize } from "lodash"; // Opcional, para capitalizar los nombres
 
 const queryClient = new QueryClient();
 
@@ -62,6 +62,21 @@ export default function RootLayout({
 
   const selectedKey = getSelectedKey(pathname);
 
+  // Genera los items del breadcrumb a partir del pathname
+  const breadcrumbItems = pathname
+    .split("/")
+    .filter(Boolean)
+    .map((segment, idx, arr) => ({
+      title: segment === "" ? "Inicio" : capitalize(segment),
+      href: "/" + arr.slice(0, idx + 1).join("/"),
+    }));
+
+  // Si estás en la raíz, muestra solo "Inicio"
+  const breadcrumbData =
+    breadcrumbItems.length === 0
+      ? [{ title: "Inicio", href: "/" }]
+      : [{ title: "Inicio", href: "/" }, ...breadcrumbItems];
+
   return (
     <html lang="es">
       <body className={inter.className}>
@@ -98,15 +113,25 @@ export default function RootLayout({
                   <Header
                     style={{
                       background: "#fff",
-                      padding: 0,
+                      padding: "0 24px",
                       position: "sticky",
                       top: 0,
                       zIndex: 1,
                       width: "100%",
                       display: "flex",
+                      alignItems: "center",
                     }}
                   >
-                    {/* Contenido del Header */}
+                    <Breadcrumb
+                      items={breadcrumbData.map((item, idx) => ({
+                        title:
+                          idx === breadcrumbData.length - 1 ? (
+                            <span>{item.title}</span>
+                          ) : (
+                            <a href={item.href}>{item.title}</a>
+                          ),
+                      }))}
+                    />
                   </Header>
                   <Content>{children}</Content>
                 </Layout>
