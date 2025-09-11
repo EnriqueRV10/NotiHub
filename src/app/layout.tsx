@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import esEs from "antd/locale/es_ES";
 import { useRouter, usePathname } from "next/navigation";
 import { HomeOutlined, PieChartOutlined } from "@ant-design/icons";
-import { capitalize } from "lodash"; // Opcional, para capitalizar los nombres
+import { capitalize } from "lodash"; // Para capitalizar los nombres
 
 const queryClient = new QueryClient();
 
@@ -72,20 +72,30 @@ export default function RootLayout({
 
   const selectedKey = getSelectedKey(pathname);
 
-  // Genera los items del breadcrumb a partir del pathname
-  const breadcrumbItems = pathname
-    .split("/")
-    .filter(Boolean)
-    .map((segment, idx, arr) => ({
-      title: segment === "" ? "Inicio" : capitalize(segment),
-      href: "/" + arr.slice(0, idx + 1).join("/"),
-    }));
+  // Genera los items del breadcrumb según la ruta actual
+  const segments = pathname.split("/").filter(Boolean);
 
-  // Si estás en la raíz, muestra solo "Inicio"
-  const breadcrumbData =
-    breadcrumbItems.length === 0
-      ? [{ title: "Inicio", href: "/" }]
-      : [{ title: "Inicio", href: "/" }, ...breadcrumbItems];
+  let breadcrumbData: { title: string; href: string }[] = [];
+
+  if (segments.length === 0) {
+    // Solo en "/"
+    breadcrumbData = [{ title: "Inicio", href: "/" }];
+  } else if (segments[0] === "Datos") {
+    // En "/Datos" y sus hijos
+    breadcrumbData = segments.map((segment, idx) => ({
+      title: capitalize(segment),
+      href: "/" + segments.slice(0, idx + 1).join("/"),
+    }));
+  } else {
+    // Para otras rutas, muestra Inicio + jerarquía
+    breadcrumbData = [
+      { title: "Inicio", href: "/" },
+      ...segments.map((segment, idx) => ({
+        title: capitalize(segment),
+        href: "/" + segments.slice(0, idx + 1).join("/"),
+      })),
+    ];
+  }
 
   return (
     <html lang="es">
