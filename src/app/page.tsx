@@ -133,22 +133,22 @@ export default function NewsListPage() {
   );
 
   return (
-    <Layout className="min-h-screen!">
+    <>
       {newsOperations.contextHolder}
 
-      <Header>
+      {/* <Header>
         <NewsHeader
           onCreateNews={handleCreateNews}
           isCreating={newsOperations.loading.create}
         />
-      </Header>
+      </Header> */}
 
-      <Content className="p-6">
+      <Content style={{ margin: "16px" }}>
         {/* Estadísticas */}
-        <StatsOverview
+        {/* <StatsOverview
           countersData={countersData}
           isCountersLoading={isCountersLoading}
-        />
+        /> */}
 
         {/* Filtros */}
         <NewsFilters
@@ -183,6 +183,6 @@ export default function NewsListPage() {
         onClose={tableState.actions.drawers.closeDetails}
         newsId={tableState.state.drawers.details.newsId || ""}
       />
-    </Layout>
+    </>
   );
 }
