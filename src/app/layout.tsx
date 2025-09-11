@@ -53,6 +53,15 @@ export default function RootLayout({
     }
   };
 
+  // Mapea la ruta actual a la clave del menú principal
+  const getSelectedKey = (path: string) => {
+    if (path === "/") return "/";
+    if (path.startsWith("/Datos")) return "/Datos";
+    return "/";
+  };
+
+  const selectedKey = getSelectedKey(pathname);
+
   return (
     <html lang="es">
       <body className={inter.className}>
@@ -79,7 +88,7 @@ export default function RootLayout({
 
                   <Menu
                     theme="dark"
-                    defaultSelectedKeys={[pathname]}
+                    selectedKeys={[selectedKey]}
                     mode="inline"
                     items={items}
                     onClick={handleMenuClick}
