@@ -17,6 +17,16 @@ const inter = Inter({ subsets: ["latin"] });
 
 const { Header, Content, Sider } = Layout;
 
+const siderStyle: React.CSSProperties = {
+  overflow: "auto",
+  height: "100vh",
+  position: "sticky",
+  insetInlineStart: 0,
+  top: 0,
+  bottom: 0,
+  scrollbarWidth: "thin",
+};
+
 type MenuItem = Required<MenuProps>["items"][number];
 
 function getItem(
@@ -88,6 +98,7 @@ export default function RootLayout({
                   collapsible
                   collapsed={collapsed}
                   onCollapse={(value) => setCollapsed(value)}
+                  style={siderStyle}
                 >
                   <div
                     style={{
