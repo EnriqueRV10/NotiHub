@@ -16,7 +16,7 @@
     "@ant-design/nextjs-registry": "^1.0.1",
     "@supabase/supabase-js": "^2.54.0",
     "@tanstack/react-query": "^5.54.1",
-    "antd": "^5.20.3",
+    "antd": "^5.27.3",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
     "next": "^14.2.13",
