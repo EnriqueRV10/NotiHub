@@ -13,7 +13,8 @@ export default function Datos() {
   } = useNewsCounters({});
 
   return (
-    <div className="m-4">
+    <div>
+      {/* Estadísticas */}
       <StatsOverview
         countersData={countersData}
         isCountersLoading={isCountersLoading}

@@ -105,7 +105,7 @@ export default function RootLayout({
             <AntdRegistry>
               <Layout style={{ minHeight: "100vh" }}>
                 <Sider
-                  collapsible
+                  collapsible={false}
                   collapsed={collapsed}
                   onCollapse={(value) => setCollapsed(value)}
                   style={siderStyle}
@@ -154,7 +154,7 @@ export default function RootLayout({
                       }))}
                     />
                   </Header>
-                  <Content>{children}</Content>
+                  <Content style={{ margin: "16px" }}>{children}</Content>
                 </Layout>
               </Layout>
             </AntdRegistry>

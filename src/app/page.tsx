@@ -143,13 +143,7 @@ export default function NewsListPage() {
         />
       </Header> */}
 
-      <Content style={{ margin: "16px" }}>
-        {/* Estadísticas */}
-        {/* <StatsOverview
-          countersData={countersData}
-          isCountersLoading={isCountersLoading}
-        /> */}
-
+      <div>
         {/* Filtros */}
         <NewsFilters
           filters={tableState.state.filters}
@@ -170,7 +164,7 @@ export default function NewsListPage() {
           deleteBuTtonLoading={newsOperations.loading.delete}
           deleteButtonDisabled={newsOperations.loading.delete}
         />
-      </Content>
+      </div>
 
       {/* Drawers */}
       <NewsCreationDrawer
