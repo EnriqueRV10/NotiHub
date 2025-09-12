@@ -21,7 +21,7 @@ import {
   DetailsDrawer,
 } from "@/features/news/components";
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 
 export interface DataType {
   key: string;
