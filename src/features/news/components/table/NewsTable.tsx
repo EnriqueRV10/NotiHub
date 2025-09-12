@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, TableColumnsType, Badge, Popconfirm, Button } from "antd";
+import { Table, TableColumnsType, Badge, Popconfirm, Button, Tag } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { TABLE_CONFIG } from "../../constants/tableConfig";
 import { COLUMN_WIDTHS } from "../../constants/tableConfig";
@@ -89,7 +89,7 @@ export default function NewsTable({
           text: "Desconocido",
           color: "gray",
         };
-        return <Badge color={color} text={text} />;
+        return <Tag color={color}>{text}</Tag>;
       },
     },
     // {
@@ -142,7 +142,7 @@ export default function NewsTable({
       }}
       onChange={onChange}
       scroll={{ x: "max-content" }}
-      size="middle"
+      size="large"
       rowKey="key"
     />
   );
