@@ -2,7 +2,8 @@
 
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider, Layout, Menu, MenuProps, Breadcrumb } from "antd";
 import React, { useState } from "react";
@@ -10,8 +11,6 @@ import esEs from "antd/locale/es_ES";
 import { useRouter, usePathname } from "next/navigation";
 import { HomeOutlined, PieChartOutlined } from "@ant-design/icons";
 import { capitalize } from "lodash"; // Para capitalizar los nombres
-
-const queryClient = new QueryClient();
 
 const inter = Inter({ subsets: ["latin"] });
 
