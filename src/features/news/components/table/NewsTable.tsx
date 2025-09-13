@@ -37,7 +37,7 @@ export default function NewsTable({
       title: "Título",
       dataIndex: "title",
       key: "title",
-      width: COLUMN_WIDTHS.title,
+      // width: COLUMN_WIDTHS.title,
       render: (text, record) => (
         <a onClick={() => handleRowClick(record)}>{text}</a>
       ),
@@ -46,13 +46,13 @@ export default function NewsTable({
       title: "Creado por",
       dataIndex: "author",
       key: "author",
-      width: COLUMN_WIDTHS.author,
+      // width: COLUMN_WIDTHS.author,
     },
     {
       title: "Inicio",
       dataIndex: "start",
       key: "start",
-      width: COLUMN_WIDTHS.startDate,
+      // width: COLUMN_WIDTHS.startDate,
       sorter: (a, b) =>
         new Date(a.start).getTime() - new Date(b.start).getTime(),
       render: (start: string) => {
@@ -69,7 +69,7 @@ export default function NewsTable({
       title: "Fin",
       dataIndex: "end",
       key: "end",
-      width: COLUMN_WIDTHS.endDate,
+      // width: COLUMN_WIDTHS.endDate,
       render: (end: string) => {
         const formattedDate = new Date(end).toLocaleDateString("es-ES", {
           day: "2-digit",
@@ -83,7 +83,7 @@ export default function NewsTable({
       title: "Estado",
       dataIndex: "status",
       key: "status",
-      width: COLUMN_WIDTHS.status,
+      // width: COLUMN_WIDTHS.status,
       render: (status: number) => {
         const { text, color } = STATUS_MAP[status] || {
           text: "Desconocido",
@@ -104,7 +104,7 @@ export default function NewsTable({
     // },
     {
       key: "action",
-      width: COLUMN_WIDTHS.actions,
+      // width: COLUMN_WIDTHS.actions,
       align: "center",
       render: (_, record) => (
         <Popconfirm
