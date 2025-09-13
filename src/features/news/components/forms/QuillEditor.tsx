@@ -34,13 +34,14 @@ const toolbarOptions = [
 
 const QuillEditor = ({ value, onChange }: QuillEditorProps) => {
   return (
-    <DynamicQuill
-      theme="snow"
-      modules={{ toolbar: toolbarOptions }}
-      value={value}
-      onChange={onChange}
-      className="h-5/6"
-    />
+    <div>
+      <DynamicQuill
+        theme="snow"
+        modules={{ toolbar: toolbarOptions }}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
   );
 };
 

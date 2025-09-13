@@ -193,7 +193,7 @@ export default function EditNews({ params }: { params: { id: string } }) {
   };
 
   return (
-    <Layout className="h-screen flex flex-col">
+    <Layout className="flex flex-col">
       {contextHolder}
       <Spin spinning={isPending} size="large" fullscreen />
       <Spin spinning={isLoading} size="large" fullscreen />
@@ -204,7 +204,7 @@ export default function EditNews({ params }: { params: { id: string } }) {
         layout="vertical"
         className="flex flex-1 h-full"
       >
-        <Layout className="overflow-hidden">
+        <Layout style={{ minHeight: "90vh" }}>
           <Header className="bg-white! flex justify-between items-center px-6 py-4">
             <div className="flex items-center">
               <Button
@@ -240,17 +240,18 @@ export default function EditNews({ params }: { params: { id: string } }) {
             </div>
           </Header>
           <Content className="p-6">
-            <div className="bg-white rounded-lg p-4">
-              <Form.Item noStyle name="body">
-                <QuillEditor
-                  value={form.getFieldValue("body")}
-                  onChange={(body: String) => form.setFieldsValue({ body })}
-                />
-              </Form.Item>
-            </div>
+            <Form.Item
+              name="body"
+              className="bg-white rounded-lg p-6! h-11/12 overflow-hidden"
+            >
+              <QuillEditor
+                value={form.getFieldValue("body")}
+                onChange={(body: String) => form.setFieldsValue({ body })}
+              />
+            </Form.Item>
           </Content>
         </Layout>
-        <Sider theme="light" width={400}>
+        <Sider theme="light" width={400} className="">
           <TabsComponent form={form} />
         </Sider>
       </Form>
