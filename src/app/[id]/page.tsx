@@ -239,16 +239,20 @@ export default function EditNews({ params }: { params: { id: string } }) {
               </Button>
             </div>
           </Header>
-          <Content className="p-6">
-            <Form.Item
-              name="body"
-              className="bg-white rounded-lg p-6! h-11/12 overflow-hidden"
-            >
-              <QuillEditor
-                value={form.getFieldValue("body")}
-                onChange={(body: String) => form.setFieldsValue({ body })}
-              />
-            </Form.Item>
+          <Content className="p-6 flex-1">
+            <div className="flex flex-col h-full">
+              <Form.Item
+                name="body"
+                className="bg-white rounded-lg p-4! flex-1 flex flex-col"
+                style={{ marginBottom: 0 }}
+              >
+                <QuillEditor
+                  value={form.getFieldValue("body")}
+                  onChange={(body: string) => form.setFieldsValue({ body })}
+                  height="calc(100vh - 250px)" // Altura calculada dinámicamente
+                />
+              </Form.Item>
+            </div>
           </Content>
         </Layout>
         <Sider theme="light" width={400} className="">
