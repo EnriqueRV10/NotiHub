@@ -48,7 +48,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [collapsed, setCollapsed] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -104,12 +103,7 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <AntdRegistry>
               <Layout style={{ minHeight: "100vh" }}>
-                <Sider
-                  collapsible={false}
-                  collapsed={collapsed}
-                  onCollapse={(value) => setCollapsed(value)}
-                  style={siderStyle}
-                >
+                <Sider style={siderStyle}>
                   <div
                     style={{
                       color: "white",
