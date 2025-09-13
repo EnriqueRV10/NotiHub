@@ -202,45 +202,45 @@ export default function EditNews({ params }: { params: { id: string } }) {
         onFinish={handleFinish}
         onFinishFailed={handleFinishFailed}
         layout="vertical"
-        className="flex flex-col h-full"
+        className="flex flex-1 h-full"
       >
-        <Header className="bg-white! flex justify-between items-center px-6 py-4">
-          <div className="flex items-center">
-            <Button
-              icon={<RollbackOutlined />}
-              type="link"
-              size="large"
-              onClick={router.back}
-            />
-            <h1 className="text-black font-bold text-lg ml-4">
-              Editar Noticia
-            </h1>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Form.Item name="status" style={{ marginBottom: 0 }}>
-              <Select
-                placeholder="Seleccionar estado"
-                suffixIcon={<CaretDownOutlined />}
-                options={Object.entries(statusMap).map(([key, { text }]) => ({
-                  label: text,
-                  value: key,
-                }))}
+        <Layout className="overflow-hidden">
+          <Header className="bg-white! flex justify-between items-center px-6 py-4">
+            <div className="flex items-center">
+              <Button
+                icon={<RollbackOutlined />}
+                type="link"
+                size="large"
+                onClick={router.back}
               />
-            </Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              shape="round"
-              icon={<SaveOutlined />}
-              size="large"
-            >
-              Guardar
-            </Button>
-          </div>
-        </Header>
-        <Layout className="flex-1 overflow-hidden">
-          <Content className="p-6 overflow-y-auto">
-            <div className="bg-white h-full rounded-lg p-4">
+              <h1 className="text-black font-bold text-lg ml-4">
+                Editar Noticia
+              </h1>
+            </div>
+            <div className="flex items-center">
+              <Form.Item name="status" style={{ marginBottom: 0 }}>
+                <Select
+                  placeholder="Seleccionar estado"
+                  suffixIcon={<CaretDownOutlined />}
+                  options={Object.entries(statusMap).map(([key, { text }]) => ({
+                    label: text,
+                    value: key,
+                  }))}
+                />
+              </Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                shape="round"
+                icon={<SaveOutlined />}
+                size="large"
+              >
+                Guardar
+              </Button>
+            </div>
+          </Header>
+          <Content className="p-6">
+            <div className="bg-white rounded-lg p-4">
               <Form.Item noStyle name="body">
                 <QuillEditor
                   value={form.getFieldValue("body")}
@@ -249,10 +249,10 @@ export default function EditNews({ params }: { params: { id: string } }) {
               </Form.Item>
             </div>
           </Content>
-          <Sider theme="light" width={400} className="overflow-y-auto">
-            <TabsComponent form={form} />
-          </Sider>
         </Layout>
+        <Sider theme="light" width={400}>
+          <TabsComponent form={form} />
+        </Sider>
       </Form>
     </Layout>
   );
