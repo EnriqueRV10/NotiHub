@@ -217,7 +217,7 @@ export default function EditNews({ params }: { params: { id: string } }) {
                 Editar Noticia
               </h1>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
               <Form.Item name="status" style={{ marginBottom: 0 }}>
                 <Select
                   placeholder="Seleccionar estado"
@@ -239,12 +239,11 @@ export default function EditNews({ params }: { params: { id: string } }) {
               </Button>
             </div>
           </Header>
-          <Content className="p-6 flex-1">
+          <Content className="flex-1 pr-4 pt-4">
             <div className="flex flex-col h-full">
               <Form.Item
                 name="body"
-                className="bg-white rounded-lg p-4! flex-1 flex flex-col"
-                style={{ marginBottom: 0 }}
+                className="bg-white rounded-lg p-4! flex-1 flex flex-col mb-0!"
               >
                 <QuillEditor
                   value={form.getFieldValue("body")}
@@ -255,7 +254,7 @@ export default function EditNews({ params }: { params: { id: string } }) {
             </div>
           </Content>
         </Layout>
-        <Sider theme="light" width={400} className="">
+        <Sider theme="light" width={400}>
           <TabsComponent form={form} />
         </Sider>
       </Form>
