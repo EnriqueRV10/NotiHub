@@ -48,7 +48,7 @@ export default function EditNews({ params }: { params: { id: string } }) {
           data.data.end_date ? dayjs(data.data.end) : null,
         ],
         status: data.data.publish_status.toString(),
-        body: data.data.content,
+        content: data.data.content, // ← Cambiado de 'body' a 'content'
       });
     }
     if (error) {
@@ -93,9 +93,9 @@ export default function EditNews({ params }: { params: { id: string } }) {
     const payloadValues = {
       title: values.title.trim(),
       // intro: values.intro?.trim() ?? "",
-      body: values.content.trim(),
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
+      content: values.content?.trim() ?? "",
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
       publish_status: parseInt(values.status, 10),
     };
     console.log("Payload values:", payloadValues);
@@ -174,12 +174,14 @@ export default function EditNews({ params }: { params: { id: string } }) {
           <Content className="flex-1 pr-4 pt-4">
             <div className="flex flex-col h-full">
               <Form.Item
-                name="body"
+                name="content"
                 className="bg-white rounded-lg p-4! flex-1 flex flex-col mb-0!"
               >
                 <QuillEditor
-                  value={form.getFieldValue("body")}
-                  onChange={(body: string) => form.setFieldsValue({ body })}
+                  value={form.getFieldValue("content")}
+                  onChange={(content: string) =>
+                    form.setFieldsValue({ content })
+                  }
                   height="calc(100vh - 250px)" // Altura calculada dinámicamente
                 />
               </Form.Item>
