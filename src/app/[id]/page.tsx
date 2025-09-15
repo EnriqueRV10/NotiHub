@@ -11,29 +11,10 @@ import { useRouter } from "next/navigation";
 import { useSingleNewsEditor, useUpdateNews } from "@/features/news/hooks";
 import dayjs from "dayjs";
 import { TabsComponent, QuillEditor } from "@/features/news/components";
-import { convertApiToComponentFormat } from "@/features/news/utils/APItoForm";
-import { convertComponentToApiFormat } from "@/features/news/utils/FormtoAPI";
+
+import { STATUS_MAP } from "@/features/news/constants/statusMap";
 
 const { Header, Sider, Content } = Layout;
-
-const statusMap: Record<number, { text: string; color: string }> = {
-  0: { text: "Borrador", color: "grey" },
-  1: { text: "Preview", color: "orange" },
-  2: { text: "Publicado", color: "green" },
-};
-
-interface ComponentGroup {
-  combinator: "and" | "or";
-  list: ComponentRule[];
-}
-
-interface ComponentRule {
-  field: string;
-  operator: "=";
-  value?: string;
-  field_extra?: string;
-  value_extra?: string;
-}
 
 interface FormValues {
   title: string;
@@ -41,8 +22,6 @@ interface FormValues {
   content: string;
   dateRange: [dayjs.Dayjs, dayjs.Dayjs];
   status: string;
-  filter: ComponentGroup[];
-  exclude: ComponentGroup[];
 }
 
 export default function EditNews({ params }: { params: { id: string } }) {
@@ -61,36 +40,6 @@ export default function EditNews({ params }: { params: { id: string } }) {
   // useEffect para actualizar los valores del formulario cuando los datos estén listos
   useEffect(() => {
     if (data) {
-      let filterRules: ComponentGroup[] = [{ combinator: "and", list: [] }];
-      let excludeRules: ComponentGroup[] = [{ combinator: "and", list: [] }];
-
-      if (data.data.employee_assignment_policy) {
-        const { filter, exclude } = data.data.employee_assignment_policy;
-
-        if (filter && filter.rules && filter.rules.length > 0) {
-          filterRules = convertApiToComponentFormat({
-            rules: filter.rules,
-            id: filter.id,
-            combinator: filter.combinator,
-          });
-        }
-
-        if (exclude && exclude.rules && exclude.rules.length > 0) {
-          excludeRules = convertApiToComponentFormat({
-            rules: exclude.rules,
-            id: exclude.id,
-            combinator: exclude.combinator,
-          });
-        }
-      }
-
-      if (filterRules.length === 0) {
-        filterRules = [{ combinator: "and", list: [] }];
-      }
-      if (excludeRules.length === 0) {
-        excludeRules = [{ combinator: "and", list: [] }];
-      }
-
       form.setFieldsValue({
         title: data.data.title,
         intro: data.data.intro,
@@ -99,8 +48,6 @@ export default function EditNews({ params }: { params: { id: string } }) {
           data.data.end_date ? dayjs(data.data.end) : null,
         ],
         status: data.data.publish_status.toString(),
-        filter: filterRules,
-        exclude: excludeRules,
         body: data.data.content,
       });
     }
@@ -135,6 +82,7 @@ export default function EditNews({ params }: { params: { id: string } }) {
   const handleFinish = (values: any) => {
     const currentValues = form.getFieldsValue(true);
     const payload = formToAPI(currentValues);
+    console.log("Payload to submit:", payload);
     if (payload) {
       mutate(payload);
     }
@@ -142,34 +90,16 @@ export default function EditNews({ params }: { params: { id: string } }) {
 
   const formToAPI = (values: FormValues): any | null => {
     const [startDate, endDate] = values.dateRange;
-    let employee_assignment_policy: any["employee_assignment_policy"] = {};
-
-    const hasFilterRules = values.filter?.some(
-      (group) => group.list.length > 0
-    );
-    const hasExcludeRules = values.exclude?.some(
-      (group) => group.list.length > 0
-    );
-
-    if (hasFilterRules || hasExcludeRules) {
-      employee_assignment_policy.filter = convertComponentToApiFormat(
-        values.filter
-      );
-      employee_assignment_policy.exclude = convertComponentToApiFormat(
-        values.exclude
-      );
-    }
-
-    return {
+    const payloadValues = {
       title: values.title.trim(),
-      intro: values.intro?.trim() ?? "",
+      // intro: values.intro?.trim() ?? "",
       body: values.content.trim(),
       start: startDate.toISOString(),
       end: endDate.toISOString(),
       publish_status: parseInt(values.status, 10),
-      employee_assignment_policy,
-      attachements: [],
     };
+    console.log("Payload values:", payloadValues);
+    return payloadValues;
   };
 
   const handleFinishFailed = ({
@@ -222,10 +152,12 @@ export default function EditNews({ params }: { params: { id: string } }) {
                 <Select
                   placeholder="Seleccionar estado"
                   suffixIcon={<CaretDownOutlined />}
-                  options={Object.entries(statusMap).map(([key, { text }]) => ({
-                    label: text,
-                    value: key,
-                  }))}
+                  options={Object.entries(STATUS_MAP).map(
+                    ([key, { text }]) => ({
+                      label: text,
+                      value: key,
+                    })
+                  )}
                 />
               </Form.Item>
               <Button

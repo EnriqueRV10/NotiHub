@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Tabs, Form, Input, DatePicker, Divider, message } from "antd";
 import type { FormInstance, TabsProps } from "antd";
-import { AssignmentsComponent } from "./AssignmentsComponent";
 
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
@@ -50,20 +49,11 @@ export const TabsComponent = ({ form }: TabsComponentProps) => {
         </div>
       ),
     },
-    // {
-    //   key: "2",
-    //   label: "Asignación",
-    //   children: (
-    //     <div className="p-4">
-    //       {contextHolder}
-
-    //       <Divider>Incluir</Divider>
-    //       <AssignmentsComponent form={form} name="filter" />
-    //       <Divider>Excluir</Divider>
-    //       <AssignmentsComponent form={form} name="exclude" />
-    //     </div>
-    //   ),
-    // },
+    {
+      key: "2",
+      label: "Asignación",
+      children: <div className="p-4">{contextHolder}</div>,
+    },
   ];
 
   return <Tabs defaultActiveKey="1" items={itemstab} centered />;
