@@ -9,3 +9,4 @@ export { useUpdateNews } from "./api/useUpdateNews";
 
 export { useNewsTableState } from "./state/useNewsTableState";
 export { useNewsOperations } from "./state/useNewsOperations";
+export { useNewsEditor } from "./state/useNewsEditor";

@@ -1,5 +1,3 @@
-// src/features/news/hooks/state/useNewsOperations.ts
-
 import { useCallback } from "react";
 import { message } from "antd";
 import { useQueryClient } from "@tanstack/react-query";

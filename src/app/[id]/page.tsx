@@ -1,132 +1,84 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Layout, Button, Select, Form, Spin, message } from "antd";
+import React, { useEffect, useCallback } from "react";
+import { Layout, Button, Select, Form, Spin } from "antd";
 import {
   RollbackOutlined,
   CaretDownOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useSingleNewsEditor, useUpdateNews } from "@/features/news/hooks";
-import dayjs from "dayjs";
 import { TabsComponent, QuillEditor } from "@/features/news/components";
-
 import { STATUS_MAP } from "@/features/news/constants/statusMap";
+import { useNewsEditor } from "@/features/news/hooks/state/useNewsEditor";
 
 const { Header, Sider, Content } = Layout;
 
 interface FormValues {
   title: string;
-  intro: string;
+  // intro?: string;
   content: string;
-  dateRange: [dayjs.Dayjs, dayjs.Dayjs];
+  dateRange: [any, any];
   status: string;
 }
 
 export default function EditNews({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [form] = Form.useForm();
-  const { data, error, isLoading } = useSingleNewsEditor({ id: params.id }); // Hook para obtener la informacion de una noticia (sin refreshonwindowsFocus)
-  const [messageApi, contextHolder] = message.useMessage();
-  const {
-    mutate,
-    error: updateError,
-    isSuccess,
-    isError,
-    isPending,
-  } = useUpdateNews(params.id); // Hook para actualizar la noticia
 
-  // useEffect para actualizar los valores del formulario cuando los datos estén listos
+  // Hook consolidado que maneja toda la lógica de edición
+  const newsEditor = useNewsEditor({
+    id: params.id,
+    enableNotifications: true,
+    onSuccessRedirect: null,
+  });
+
+  // Auto-sincronización del formulario cuando se cargan los datos
   useEffect(() => {
-    if (data) {
-      form.setFieldsValue({
-        title: data.data.title,
-        intro: data.data.intro,
-        dateRange: [
-          data.data.start_date ? dayjs(data.data.start) : null,
-          data.data.end_date ? dayjs(data.data.end) : null,
-        ],
-        status: data.data.publish_status.toString(),
-        content: data.data.content, // ← Cambiado de 'body' a 'content'
-      });
-    }
-    if (error) {
-      messageApi.error({
-        content: "Error al cargar la noticia",
-        duration: 5,
-      });
-    }
-  }, [data, form, messageApi, error]);
+    newsEditor.operations.syncFormWithData(form);
+  }, [newsEditor.operations, form]);
 
-  // Cuando la noticia se actualiza con éxito, muestra un mensaje
-  useEffect(() => {
-    if (isSuccess) {
-      messageApi.success({
-        content: "Noticia actualizada con éxito",
-        duration: 5,
-      });
-    }
-  }, [isSuccess, messageApi]);
+  // Manejador de envío del formulario
+  const handleFinish = useCallback(
+    async (values: FormValues) => {
+      try {
+        await newsEditor.operations.updateNews(values);
+      } catch (error) {
+        console.error("Error updating news:", error);
+      }
+    },
+    [newsEditor.operations]
+  );
 
-  // Muestra un mensaje de error si la noticia no se actualiza correctamente
-  useEffect(() => {
-    if (isError) {
-      messageApi.error({
-        content: `Error al actualizar la noticia`,
-        duration: 5,
-      });
-    }
-  }, [isError, messageApi]);
+  // Manejador de errores de validación del formulario
+  const handleFinishFailed = useCallback(
+    ({
+      errorFields,
+    }: {
+      errorFields: { name: (string | number)[]; errors: string[] }[];
+    }) => {
+      // Mostrar errores de validación del formulario
+    },
+    []
+  );
 
-  const handleFinish = (values: any) => {
-    const currentValues = form.getFieldsValue(true);
-    const payload = formToAPI(currentValues);
-    console.log("Payload to submit:", payload);
-    if (payload) {
-      mutate(payload);
-    }
-  };
-
-  const formToAPI = (values: FormValues): any | null => {
-    const [startDate, endDate] = values.dateRange;
-    const payloadValues = {
-      title: values.title.trim(),
-      // intro: values.intro?.trim() ?? "",
-      content: values.content?.trim() ?? "",
-      start_date: startDate.toISOString(),
-      end_date: endDate.toISOString(),
-      publish_status: parseInt(values.status, 10),
-    };
-    console.log("Payload values:", payloadValues);
-    return payloadValues;
-  };
-
-  const handleFinishFailed = ({
-    errorFields,
-  }: {
-    errorFields: { name: (string | number)[]; errors: string[] }[];
-  }) => {
-    messageApi.error({
-      content: (
-        <>
-          <strong>Error al Guardar la noticia:</strong>
-          <ul className="text-left list-disc px-4">
-            {errorFields.map((field, index) => (
-              <li key={index}>{field.errors.join(", ")}</li>
-            ))}
-          </ul>
-        </>
-      ),
-      duration: 5,
-    });
-  };
+  // Manejador de cambios en el QuillEditor
+  const handleContentChange = useCallback(
+    (content: string) => {
+      form.setFieldsValue({ content });
+    },
+    [form]
+  );
 
   return (
     <Layout className="flex flex-col">
-      {contextHolder}
-      <Spin spinning={isPending} size="large" fullscreen />
-      <Spin spinning={isLoading} size="large" fullscreen />
+      {/* Context holder para notificaciones */}
+      {newsEditor.contextHolder}
+
+      {/* Spinners de loading */}
+      <Spin spinning={newsEditor.loading.updating} size="large" fullscreen />
+      <Spin spinning={newsEditor.loading.fetching} size="large" fullscreen />
+
       <Form
         form={form}
         onFinish={handleFinish}
@@ -166,11 +118,16 @@ export default function EditNews({ params }: { params: { id: string } }) {
                 shape="round"
                 icon={<SaveOutlined />}
                 size="large"
+                loading={newsEditor.loading.updating}
+                disabled={
+                  newsEditor.loading.updating || newsEditor.loading.fetching
+                }
               >
                 Guardar
               </Button>
             </div>
           </Header>
+
           <Content className="flex-1 pr-4 pt-4">
             <div className="flex flex-col h-full">
               <Form.Item
@@ -178,16 +135,15 @@ export default function EditNews({ params }: { params: { id: string } }) {
                 className="bg-white rounded-lg p-4! flex-1 flex flex-col mb-0!"
               >
                 <QuillEditor
-                  value={form.getFieldValue("content")}
-                  onChange={(content: string) =>
-                    form.setFieldsValue({ content })
-                  }
-                  height="calc(100vh - 250px)" // Altura calculada dinámicamente
+                  value={form.getFieldValue("content") || ""}
+                  onChange={handleContentChange}
+                  height="calc(100vh - 250px)"
                 />
               </Form.Item>
             </div>
           </Content>
         </Layout>
+
         <Sider theme="light" width={400}>
           <TabsComponent form={form} />
         </Sider>
